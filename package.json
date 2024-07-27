@@ -1,0 +1,16 @@
+{
+  "name": "votekick",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --env-file=.env index.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "mongoose": "^8.5.1",
+    "node-telegram-bot-api": "^0.66.0"
+  },
+  "type": "module"
+}
