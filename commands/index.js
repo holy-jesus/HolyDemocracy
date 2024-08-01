@@ -2,8 +2,8 @@ import "./cancel.js";
 import "./get_voting.js";
 import "./start.js";
 import "./vanish.js";
-import "./block.js"
-import "./unblock.js"
+import "./block.js";
+import "./unblock.js";
 import "./voting/index.js";
 
 import { bot } from "../bot.js";
@@ -26,7 +26,17 @@ await bot.setMyCommands([
     description:
       "Блокирует пользователя, чтобы он не мог использовать команды /votemute и /voteban (доступно только для администраторов)",
   },
-  { command: "unblock", 
-    description: "Разблокирует пользователя, чтобы он опять смог использовать бота (доступно только для администраторов)"
-  }
+  {
+    command: "unblock",
+    description:
+      "Разблокирует пользователя, чтобы он опять смог использовать бота (доступно только для администраторов)",
+  },
 ]);
+
+import { Chat } from "../models/index.js";
+
+if (process.env.DEBUG) {
+  bot.onText("/debug", async (msg) => {
+    console.log(await Chat.findById(msg.chat.id));
+  });
+}

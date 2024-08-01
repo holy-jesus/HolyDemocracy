@@ -1,5 +1,5 @@
 import { bot } from "../bot.js";
-import { getVotersButtons } from "../buttons/voting_info.js";
+import { getVotingInfoButtons } from "../buttons/voting_info.js";
 import { Voting } from "../models/index.js";
 import {
   getUserMention,
@@ -26,10 +26,13 @@ bot.onText("/getvoting", async (msg) => {
  * @returns
  */
 async function getVoting(msg) {
-  if ((await isAdministrator(msg.chat.id, msg.from.id)) == false && msg.chat.type != "private") {
+  if (
+    (await isAdministrator(msg.chat.id, msg.from.id)) == false &&
+    msg.chat.type != "private"
+  ) {
     return;
   }
-  const votingId = getOnlyFirstArgument(msg.text)
+  const votingId = getOnlyFirstArgument(msg.text);
   if (votingId === null)
     return await sendMessage(
       msg.chat.id,
@@ -56,13 +59,19 @@ async function getVoting(msg) {
       msg.message_id
     );
 
-  const starter = await bot.getChatMember(votingObj.chatId, votingObj.starterId);
-  const candidate = await bot.getChatMember(votingObj.chatId, votingObj.candidateId);
+  const starter = await bot.getChatMember(
+    votingObj.chatId,
+    votingObj.starterId
+  );
+  const candidate = await bot.getChatMember(
+    votingObj.chatId,
+    votingObj.candidateId
+  );
   const status = {
     timeout: "Голосование закончилось, время вышло.",
     yes: "Голосование закончилось, набралось необходимое количество голосов за.",
     no: "Голосование закончилось, набралось необходимое количество голосов против.",
-    cancel: "Госолование отменил администратор.",
+    cancel: "Голосование отменил администратор.",
     [null]: `Голосование продлится до ${votingObj.until.toLocaleString(
       "ru-RU"
     )}`,
@@ -85,6 +94,7 @@ async function getVoting(msg) {
       status +
       "\n\n" +
       `Голосов за ${votingObj.yes.length} из ${votingObj.neededYes}\n` +
-      `Голосов против ${votingObj.no.length} из ${votingObj.neededNo}`, getVotersButtons(votingObj.chatId, votingObj.starterId)
+      `Голосов против ${votingObj.no.length} из ${votingObj.neededNo}`,
+      await getVotingInfoButtons(votingObj.chatId, votingObj.starterId)
   );
 }

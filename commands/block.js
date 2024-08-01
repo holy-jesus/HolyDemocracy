@@ -43,7 +43,10 @@ bot.onText("/block", async (msg) => {
     }
     await sendMessage(msg.chat.id, "Выберите необходимый чат:", [chatsButtons]);
   } else if (isAdministrator(msg.chat.id, msg.from.id)) {
-    const userId = getOnlyFirstArgument(msg.text);
+    let userId = getOnlyFirstArgument(msg.text);
+    if (!userId && msg.reply_to_message) {
+      userId = msg.reply_to_message.from.id;
+    }
     if (!userId) {
       return await sendMessage(
         msg.chat.id,
@@ -58,6 +61,7 @@ bot.onText("/block", async (msg) => {
 
 bot.on("callback_query", async (event) => {
   if (!event.data.startsWith("bl")) return;
+  console.log(event);
   const args = event.data.replace("bl", "").split("|");
   const chatId = args[0];
   const userId = args[1];
@@ -70,7 +74,7 @@ bot.on("callback_query", async (event) => {
  *
  * @param {Number} chatId
  * @param {Number} userId
- * @returns {String}
+ * @returns {Promise<String>}
  */
 async function blockUser(chatId, userId) {
   try {
@@ -80,9 +84,10 @@ async function blockUser(chatId, userId) {
   }
   if (await Block.countDocuments({ userId: userId, chatId: chatId })) {
     return "Этот пользователь уже заблокирован.";
+  } else if (await isAdministrator(chatId, userId)) {
+    return "Этот пользователь администратор.";
   }
   const blockObj = new Block({ userId: userId, chatId: chatId });
   await blockObj.save();
   return "Пользователь был успешно заблокирован.";
 }
-

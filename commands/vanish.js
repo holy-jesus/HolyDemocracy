@@ -8,4 +8,7 @@ bot.onText("/vanish", async (msg) => {
   )
     return;
   await timeoutUser(msg.chat.id, msg.from.id, 60);
+  try {
+    await bot.deleteMessage(msg.chat.id, msg.message_id);
+  } catch {}
 });

@@ -11,7 +11,6 @@ import { endVoting } from "./end_voting.js";
  */
 async function startVoting(msg, action) {
   const chatObj = await Chat.findById(msg.chat.id);
-
   const starter = msg.from;
   let candidateId = null;
   const textMention = msg.entities.find(
@@ -23,7 +22,7 @@ async function startVoting(msg, action) {
     candidateId = textMention.user.id;
   }
 
-  if (!candidateId) {
+  if (!candidateId || candidateId == null) {
     await sendMessage(
       msg.chat.id,
       getUserMention(starter) +
@@ -51,6 +50,10 @@ async function startVoting(msg, action) {
     errorText =
       getUserMention(starter) +
       ", на данного пользователя уже идёт голосование.";
+  } else if (!(await isAdministrator(msg.chat.id, botAccount.id))) {
+    errorText =
+      getUserMention(starter) +
+      ", я не могу начать голосование, пока у меня нету прав администратора.";
   }
   if (errorText) return await sendMessage(msg.chat.id, errorText);
 
@@ -83,7 +86,7 @@ async function startVoting(msg, action) {
   );
 
   const timeoutId = setTimeout(
-    () => endVoting(chatObj, votingObj, starter, candidate.user),
+    () => endVoting(chatObj, votingObj, starter, candidate.user, "timeout"),
     chatObj.settings.timeForVoting * 1000
   );
 

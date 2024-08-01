@@ -1,8 +1,7 @@
 import { bot } from "../../bot.js";
 import { startVoting } from "./start_voting.js";
-import { onVote } from "./on_vote.js"
+import { onVote } from "./on_vote.js";
 import { isBlocked } from "../../utils.js";
-
 
 bot.onText("/votemute", async (msg) => {
   if (await isBlocked(msg.chat.id, msg.from.id)) return;

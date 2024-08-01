@@ -1,27 +1,20 @@
+import { isBlocked } from "../utils.js";
+
 /**
  *
- * @param {String} _id
- * @returns {import("node-telegram-bot-api").InlineKeyboardButton[][]}
+ * @param {Number} chatId
+ * @param {Number} userId
+ * @returns {Promise<import("node-telegram-bot-api").InlineKeyboardButton[][]>}
  */
-function getVotersButtons(chatId, userId) {
+async function getVotingInfoButtons(chatId, userId) {
   return [
     [
       {
-        text: "Заблокировать пользователя начавшего голосование",
-        callback_data: `bl${chatId}|${userId}`,
+        text: ((await isBlocked(chatId, userId)) ? "Заблокировать" : "Разблокировать") + "пользователя начавшего голосование",
+        callback_data: ((await isBlocked(chatId, userId)) ? "bl" : "un" ) + `${chatId}|${userId}`,
       },
-    ],
-    [
-      {
-        text: "Разблокировать пользователя начавшего голосование",
-        callback_data: `un${chatId}|${userId}`,
-      },
-    ],
-
-    // [
-    //   { text: "Показать кто проголосовал против", callback_data: "vn" + _id }
-    // ]
+    ]
   ];
 }
 
-export { getVotersButtons };
+export { getVotingInfoButtons };

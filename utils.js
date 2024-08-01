@@ -166,7 +166,7 @@ async function editMessage(
  * @param {String} text
  * @param {import("node-telegram-bot-api").InlineKeyboardButton[][]} inline_keyboard
  */
-async function sendToAllAdmins(chatObj, text, inline_keyboard=undefined) {
+async function sendToAllAdmins(chatObj, text, inline_keyboard = undefined) {
   if (!chatObj.settings.mentionOnlyCreator) {
     for (let adminId of chatObj.admins) {
       await sendMessage(adminId, text, inline_keyboard);
@@ -196,9 +196,9 @@ async function isBlocked(chatId, userId) {
 }
 
 /**
- * 
- * @param {Number} chatId 
- * @param {Number} userId 
+ *
+ * @param {Number} chatId
+ * @param {Number} userId
  * @returns {Number}
  */
 async function countTimeouts(chatId, userId) {
@@ -210,13 +210,19 @@ async function countTimeouts(chatId, userId) {
 }
 
 /**
- * 
- * @param {Number} chatId 
+ *
+ * @param {Number} chatId
+ * @param {Boolean} start
  */
-async function deleteChat(chatId) {
-  const chatObj = await Chat.findById(chatId)
-  await chatObj.deleteOne()
-  
+async function deleteChat(chatId, start = false) {
+  const chatObj = await Chat.findById(chatId);
+  for (let votingObj of await Voting.find({ chatId: chatId, done: null })) {
+    if (!start) {
+      clearTimeout(votingObj.timeoutId);
+    }
+    await votingObj.deleteOne();
+  }
+  await chatObj.deleteOne();
 }
 
 export {
@@ -232,5 +238,5 @@ export {
   getOnlyFirstArgument,
   isBlocked,
   countTimeouts,
-  deleteChat
+  deleteChat,
 };

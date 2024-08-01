@@ -1,2 +1,2 @@
-import "./events/index.js"
-import "./commands/index.js"
+import "./events/index.js";
+import "./commands/index.js";

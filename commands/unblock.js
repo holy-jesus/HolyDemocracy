@@ -44,7 +44,10 @@ bot.onText("/unblock", async (msg) => {
 
     await sendMessage(msg.chat.id, "Выберите необходимый чат:", [chatsButtons]);
   } else if (await isAdministrator(msg.chat.id, msg.from.id)) {
-    const userId = getOnlyFirstArgument(msg.text);
+    let userId = getOnlyFirstArgument(msg.text);
+    if (!userId && msg.reply_to_message) {
+      userId = msg.reply_to_message.from.id;
+    }
     if (!userId) {
       return await sendMessage(
         msg.chat.id,
@@ -71,6 +74,7 @@ bot.on("callback_query", async (event) => {
  *
  * @param {Number} chatId
  * @param {Number} userId
+ * @param {Promise<String>}
  */
 async function unblockUser(chatId, userId) {
   try {
@@ -79,7 +83,9 @@ async function unblockUser(chatId, userId) {
     return "Неверное ID пользователя.";
   }
   if (!(await Block.countDocuments({ userId: userId, chatId: chatId }))) {
-    return "Этот пользователь не заблокирован.";
+    return "Этот пользователь незаблокирован.";
+  } else if (await isAdministrator(chatId, userId)) {
+    return "Этот пользователь администратор.";
   }
   await Block.deleteOne({ userId: userId, chatId: chatId });
   return "Пользователь был успешно разблокирован.";

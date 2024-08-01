@@ -2,7 +2,7 @@ import { bot } from "../../bot.js";
 import { Chat, Voting } from "../../models/index.js";
 import { votingText } from "./format_text.js";
 import { editMessage, isVotingDone } from "../../utils.js";
-import { getVotingButtons } from "../../buttons/voting.js"
+import { getVotingButtons } from "../../buttons/voting.js";
 import { endVoting } from "./end_voting.js";
 
 /**

@@ -4,8 +4,8 @@ import { editMessage, sendMessage, isAdministrator } from "../utils.js";
 import { votingText } from "./voting/format_text.js";
 
 bot.onText("/cancel", async (msg) => {
-  if (await isAdministrator(msg.chat.id, msg.from.id) == false) {
-    return
+  if ((await isAdministrator(msg.chat.id, msg.from.id)) == false) {
+    return;
   }
   const args = msg.text.split(" ").filter((value) => value != "");
   if (args.length != 2)
@@ -43,12 +43,6 @@ bot.onText("/cancel", async (msg) => {
     );
   const chatObj = await Chat.findById(votingObj.chatId);
 
-  await sendMessage(
-    msg.chat.id,
-    "Неправильное айди.",
-    undefined,
-    msg.message_id
-  );
   votingObj.done = "cancel";
   await votingObj.save();
   const starter = await bot.getChatMember(
