@@ -8,10 +8,10 @@ bot.onText("/votemute", async (msg) => {
   await startVoting(msg, "mute");
 });
 
-// bot.onText("/voteban", async (msg) => {
-//   if (await isBlocked(msg.chat.id, msg.from.id)) return;
-//   await startVoting(msg, "ban");
-// });
+bot.onText("/voteban", async (msg) => {
+  if (await isBlocked(msg.chat.id, msg.from.id)) return;
+  await startVoting(msg, "ban");
+});
 
 bot.on("callback_query", async (event) => {
   if (await isBlocked(event.message.chat.id, event.from.id)) return;

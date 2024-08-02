@@ -1,8 +1,9 @@
-import Chat from "./chat.js";
-import Voting from "./voting.js";
 import Block from "./block.js";
+import Chat from "./chat.js";
+import Cooldown from "./cooldown.js";
+import Voting from "./voting.js";
 import { connect } from "mongoose";
 
 await connect(process.env.MONGODB_URL);
 
-export { Chat, Voting, Block };
+export { Block, Chat, Cooldown, Voting };

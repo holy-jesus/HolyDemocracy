@@ -9,9 +9,10 @@ const chatSchema = new Schema({
     mentionOnlyCreator: { type: Boolean, default: true },
     votesForKick: { type: Number, default: 10 },
     votesForMute: { type: Number, default: 10 },
-    votesAgainst: { type: Number, default: 2 },
+    votesAgainst: { type: Number, default: 4 },
     timeForVoting: { type: Number, default: 600 },
     muteTime: { type: Number, default: 3600 },
+    cooldown: { type: Number, default: 600}
   },
 });
 

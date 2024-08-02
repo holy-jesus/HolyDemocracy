@@ -12,6 +12,8 @@ import { endVoting } from "./end_voting.js";
 async function startVoting(msg, action) {
   const chatObj = await Chat.findById(msg.chat.id);
   const starter = msg.from;
+
+  // Находим кандидата
   let candidateId = null;
   const textMention = msg.entities.find(
     (value) => value.type == "text_mention"
@@ -23,14 +25,19 @@ async function startVoting(msg, action) {
   }
 
   if (!candidateId || candidateId == null) {
-    await sendMessage(
+    return await sendMessage(
       msg.chat.id,
       getUserMention(starter) +
         ", чтобы использовать эту команду вы должны ответить на сообщение нужного человека с этой командой."
     );
   }
 
+  // Проверки на возможность запустить голосование
   const candidate = await bot.getChatMember(msg.chat.id, candidateId);
+  const existingVoting = await Voting.findOne({
+    $or: [{ candidateId: candidateId }, { candidateId: starter.id }],
+    $and: [{ done: null }],
+  });
   let errorText = null;
   if (
     candidateId == starter.id ||
@@ -41,15 +48,9 @@ async function startVoting(msg, action) {
     errorText =
       getUserMention(starter) +
       ", вы не можете использовать эту команду на этого пользователя.";
-  } else if (
-    (await Voting.countDocuments({
-      candidateId: candidateId,
-      done: null,
-    })) != 0
-  ) {
+  } else if (existingVoting) {
     errorText =
-      getUserMention(starter) +
-      ", на данного пользователя уже идёт голосование.";
+      getUserMention(starter) + ", вы не можете начать голосование сейчас.";
   } else if (!(await isAdministrator(msg.chat.id, botAccount.id))) {
     errorText =
       getUserMention(starter) +
@@ -57,6 +58,7 @@ async function startVoting(msg, action) {
   }
   if (errorText) return await sendMessage(msg.chat.id, errorText);
 
+  // Создаём новое голосование и отправляем его в чат
   const votingUntil = new Date(
     Date.now() + chatObj.settings.timeForVoting * 1000
   );
@@ -78,18 +80,17 @@ async function startVoting(msg, action) {
     no: [],
     neededNo: chatObj.settings.votesAgainst,
   });
-
   const votingMessage = await sendMessage(
     msg.chat.id,
     votingText(starter, candidate.user, votingObj, chatObj),
     getVotingButtons(votingObj._id.toString())
   );
 
+  // Создаём таймаут, чтобы через необходимое время голосование закончилось
   const timeoutId = setTimeout(
     () => endVoting(chatObj, votingObj, starter, candidate.user, "timeout"),
     chatObj.settings.timeForVoting * 1000
   );
-
   votingObj.messageId = votingMessage.message_id;
   votingObj.timeoutId = timeoutId[Symbol.toPrimitive]();
   await votingObj.save();

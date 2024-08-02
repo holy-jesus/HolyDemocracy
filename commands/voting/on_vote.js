@@ -12,13 +12,16 @@ import { endVoting } from "./end_voting.js";
  */
 async function onVote(event) {
   if (!event.data.startsWith("+") && !event.data.startsWith("-")) return;
+
   const votingObj = await Voting.findById(event.data.slice(1));
+
   if (votingObj.done) {
     await bot.answerCallbackQuery(event.id, {
       text: "Это голосование уже закончилось",
     });
     return;
   }
+
   const chatObj = await Chat.findById(event.message.chat.id);
   const candidate = await bot.getChatMember(
     event.message.chat.id,
@@ -28,19 +31,23 @@ async function onVote(event) {
     event.message.chat.id,
     votingObj.starterId
   );
+
   const actionText = event.data.startsWith("+") ? "за" : "против";
   let newChoice = event.data.startsWith("+") ? votingObj.yes : votingObj.no;
   let prevChoice = event.data.startsWith("+") ? votingObj.no : votingObj.yes;
+
   // if (newChoice.includes(event.from.id)) {
   //   await bot.answerCallbackQuery(event.id, {
   //     text: `Вы уже проголосовали ${actionText}`,
   //   });
   //   return;
   // }
+
   newChoice.push(event.from.id);
   prevChoice = prevChoice.filter((id) => id != event.from.id);
   votingObj.yes = event.data.startsWith("+") ? newChoice : prevChoice;
   votingObj.no = event.data.startsWith("+") ? prevChoice : newChoice;
+
   await votingObj.save();
   await bot.answerCallbackQuery(event.id, {
     text: `Вы успешно проголосовали ${actionText}`,

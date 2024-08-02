@@ -7,11 +7,12 @@ import { isBlocked } from "../utils.js";
  * @returns {Promise<import("node-telegram-bot-api").InlineKeyboardButton[][]>}
  */
 async function getVotingInfoButtons(chatId, userId) {
+  const blocked = await isBlocked(chatId, userId)
   return [
     [
       {
-        text: ((await isBlocked(chatId, userId)) ? "Заблокировать" : "Разблокировать") + "пользователя начавшего голосование",
-        callback_data: ((await isBlocked(chatId, userId)) ? "bl" : "un" ) + `${chatId}|${userId}`,
+        text: blocked ? "Заблокировать" : "Разблокировать" + "пользователя начавшего голосование",
+        callback_data: blocked ? "bl" : "un"  + `${chatId}|${userId}`,
       },
     ]
   ];

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node --env-file=.env index.js"
+    "start": "node --env-file=.env index.js",
+    "debug": "DEBUG=true node --env-file=.env index.js"
   },
   "author": "",
   "license": "MIT",

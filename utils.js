@@ -1,4 +1,4 @@
-import { Chat, Voting, Block } from "./models/index.js";
+import { Chat, Voting, Block, Cooldown } from "./models/index.js";
 import { bot } from "./bot.js";
 
 /**
@@ -91,6 +91,7 @@ async function banUser(chatId, userId, duration) {
   await bot
     .banChatMember(chatId, userId, {
       until_date: Date.now() / 1000 + duration,
+      revoke_messages: true,
     })
     .then(
       () => (success = true),
@@ -167,12 +168,12 @@ async function editMessage(
  * @param {import("node-telegram-bot-api").InlineKeyboardButton[][]} inline_keyboard
  */
 async function sendToAllAdmins(chatObj, text, inline_keyboard = undefined) {
-  if (!chatObj.settings.mentionOnlyCreator) {
-    for (let adminId of chatObj.admins) {
-      await sendMessage(adminId, text, inline_keyboard);
-    }
-  }
   await sendMessage(chatObj.creator, text, inline_keyboard);
+  if (chatObj.settings.mentionOnlyCreator) return;
+
+  for (let adminId of chatObj.admins) {
+    await sendMessage(adminId, text, inline_keyboard);
+  }
 }
 
 /**
@@ -225,6 +226,32 @@ async function deleteChat(chatId, start = false) {
   await chatObj.deleteOne();
 }
 
+async function isCooldown(chatId, userId) {
+  const cooldownObj = await Cooldown.findOne({
+    chatId: chatId,
+    userId: userId,
+  });
+  if (!cooldownObj || Date.now() / 1000 > cooldownObj.until) {
+    return false;
+  }
+  return true;
+}
+
+async function setCooldown(chatId, userId, duration) {
+  await Cooldown.updateOne(
+    {
+      chatId: chatId,
+      userId: userId,
+    },
+    {
+      chatId: chatId,
+      userId: userId,
+      until: Date.now() / 1000 + duration,
+    },
+    { upsert: true }
+  );
+}
+
 export {
   isAdministrator,
   updateAdministrators,
@@ -239,4 +266,6 @@ export {
   isBlocked,
   countTimeouts,
   deleteChat,
+  isCooldown,
+  setCooldown,
 };
