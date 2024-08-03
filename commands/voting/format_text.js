@@ -4,11 +4,11 @@ import { getUserMention } from "../../utils.js";
 
 /**
  *
- * @param {import("node-telegram-bot-api").Message | import("node-telegram-bot-api").CallbackQuery} event
+ * @param {import("node-telegram-bot-api").User} starter
  * @param {import("node-telegram-bot-api").User} candidate
  * @param {Voting} votingObj
  * @param {Chat} chatObj
- * @param {String} action
+ * @param {String} reason
  * @returns {String}
  */
 function votingText(

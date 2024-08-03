@@ -1,10 +1,12 @@
+import "./voting/index.js";
+import "./block.js";
 import "./cancel.js";
 import "./get_voting.js";
+import "./reload.js";
+import "./settings.js"
 import "./start.js";
-import "./vanish.js";
-import "./block.js";
 import "./unblock.js";
-import "./voting/index.js";
+import "./vanish.js";
 
 import { bot } from "../bot.js";
 
@@ -34,9 +36,12 @@ await bot.setMyCommands([
 ]);
 
 import { Chat } from "../models/index.js";
+import { isCooldown, setCooldown } from "../utils.js";
 
 if (process.env.DEBUG) {
   bot.onText("/debug", async (msg) => {
-    console.log(await Chat.findById(msg.chat.id));
+    if (await isCooldown(msg.chat.id, undefined, "debug")) return
+    await bot.sendMessage(msg.chat.id, "Привет!")
+    await setCooldown(msg.chat.id, 5, undefined, "debug")
   });
 }

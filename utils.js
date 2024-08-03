@@ -1,5 +1,5 @@
 import { Chat, Voting, Block, Cooldown } from "./models/index.js";
-import { bot } from "./bot.js";
+import { bot, botAccount } from "./bot.js";
 
 /**
  *
@@ -218,38 +218,75 @@ async function countTimeouts(chatId, userId) {
 async function deleteChat(chatId, start = false) {
   const chatObj = await Chat.findById(chatId);
   for (let votingObj of await Voting.find({ chatId: chatId, done: null })) {
-    if (!start) {
-      clearTimeout(votingObj.timeoutId);
-    }
+    if (!start) clearTimeout(votingObj.timeoutId);
     await votingObj.deleteOne();
   }
+  for (let blockObj of await Block.find({ chatId: chatId }))
+    await blockObj.deleteOne();
+  for (let cooldownObj of await Cooldown.find({ chatId: chatId }))
+    await cooldownObj.deleteOne();
   await chatObj.deleteOne();
+  await bot.leaveChat(chatId).catch(() => {});
 }
 
-async function isCooldown(chatId, userId) {
+/**
+ *
+ * @param {Number} chatId
+ * @param {Number | undefined} userId
+ * @param {String | undefined} command
+ * @returns {Promise<Boolean>}
+ */
+async function isCooldown(chatId, userId = undefined, command = undefined) {
   const cooldownObj = await Cooldown.findOne({
     chatId: chatId,
     userId: userId,
+    command: command,
   });
-  if (!cooldownObj || Date.now() / 1000 > cooldownObj.until) {
-    return false;
-  }
+  if (!cooldownObj || Date.now() / 1000 > cooldownObj.until) return false;
   return true;
 }
 
-async function setCooldown(chatId, userId, duration) {
+/**
+ *
+ * @param {Number} chatId
+ * @param {Number} duration
+ * @param {Number | undefined} userId
+ * @param {String | undefined} command
+ */
+async function setCooldown(
+  chatId,
+  duration,
+  userId = undefined,
+  command = undefined
+) {
   await Cooldown.updateOne(
     {
       chatId: chatId,
       userId: userId,
+      command: command,
     },
     {
-      chatId: chatId,
-      userId: userId,
-      until: Date.now() / 1000 + duration,
+      $set: {
+        chatId: chatId,
+        userId: userId,
+        command: command,
+        until: Date.now() / 1000 + duration,
+      },
     },
     { upsert: true }
   );
+}
+
+/**
+ *
+ * @param {Number} chatId
+ */
+async function getOrCreateChat(chatId) {
+  let chat = await Chat.findById(chatId);
+  if (chat) return chat;
+  chat = new Chat({ _id: chatId });
+  await chat.save();
+  return chat;
 }
 
 export {
@@ -268,4 +305,5 @@ export {
   deleteChat,
   isCooldown,
   setCooldown,
+  getOrCreateChat,
 };

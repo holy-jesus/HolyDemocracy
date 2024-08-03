@@ -54,6 +54,7 @@ async function onVote(event) {
   });
 
   const done = isVotingDone(votingObj);
+  
   if (done) {
     await endVoting(chatObj, votingObj, starter.user, candidate.user, done);
     return;

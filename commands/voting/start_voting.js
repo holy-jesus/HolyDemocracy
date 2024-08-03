@@ -1,6 +1,12 @@
 import { bot, botAccount } from "../../bot.js";
 import { Chat, Voting } from "../../models/index.js";
-import { isAdministrator, getUserMention, sendMessage } from "../../utils.js";
+import {
+  isAdministrator,
+  getUserMention,
+  sendMessage,
+  setCooldown,
+  isCooldown,
+} from "../../utils.js";
 import { getVotingButtons } from "../../buttons/voting.js";
 import { votingText } from "./format_text.js";
 import { endVoting } from "./end_voting.js";
@@ -55,6 +61,8 @@ async function startVoting(msg, action) {
     errorText =
       getUserMention(starter) +
       ", я не могу начать голосование, пока у меня нету прав администратора.";
+  } else if (await isCooldown(msg.chat.id, msg.from.id, "vote")) {
+    errorText = getUserMention(starter) + ", у вас сейчас КД.";
   }
   if (errorText) return await sendMessage(msg.chat.id, errorText);
 
@@ -94,6 +102,12 @@ async function startVoting(msg, action) {
   votingObj.messageId = votingMessage.message_id;
   votingObj.timeoutId = timeoutId[Symbol.toPrimitive]();
   await votingObj.save();
+  await setCooldown(
+    msg.chat.id,
+    chatObj.settings.cooldown,
+    msg.from.id,
+    "vote"
+  );
 }
 
 export { startVoting };

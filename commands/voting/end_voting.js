@@ -91,6 +91,17 @@ bot.on("callback_query", async (event) => {
   // deny - deny - разблокировать пользователя
   const id = event.data.slice(4);
   const votingObj = await Voting.findById(id);
+  const chatObj = await Chat.findById(votingObj.chatId);
+  const starter = await bot.getChatMember(
+    votingObj.chatId,
+    votingObj.starterId
+  );
+  const candidate = await bot.getChatMember(
+    votingObj.chatId,
+    votingObj.candidateId
+  );
+  let reason
+  console.log(candidate);
 
   if (!votingObj) return;
 
@@ -102,36 +113,48 @@ bot.on("callback_query", async (event) => {
   }
 
   if (event.data.startsWith("conf")) {
+    reason = "ban_yes"
+
     const success = await banUser(votingObj.chatId, votingObj.candidateId, 0);
-    if (success)
-      await bot.answerCallbackQuery(event.id, {
-        text: "Пользователь был успешно заблокирован",
-      });
-    else
-      await bot.answerCallbackQuery(event.id, {
-        text: "Произошла ошибка при блокировке пользователя",
-      });
-    await editMessage(
-      votingObj.chatId,
-      votingObj.messageId,
-      votingText(starter, candidate, votingObj, chatObj, "ban_yes")
-    );
-  } else {
-    await bot.getChatMember(votingObj.chatId, votingObj.candidateId);
-    await bot.restrictChatMember(votingObj.chatId, votingObj.candidateId, {
-      can_send_other_messages: true,
-      can_add_web_page_previews: true,
-      until_date: Date.now() / 1000 + 60,
+
+    await bot.answerCallbackQuery(event.id, {
+      text: success
+        ? "Пользователь был успешно заблокирован"
+        : "Произошла ошибка при блокировке пользователя",
     });
+
     await editMessage(
       votingObj.chatId,
       votingObj.messageId,
-      votingText(starter, candidate, votingObj, chatObj, "ban_no")
+      votingText(starter.user, candidate.user, votingObj, chatObj, reason)
     );
+
+  } else {
+
+    reason = "ban_no"
+
+    if (candidate.status == "restricted")
+      await bot
+        .restrictChatMember(votingObj.chatId, votingObj.candidateId, {
+          can_send_other_messages: true,
+          can_add_web_page_previews: true,
+          until_date: Date.now() / 1000 + 60,
+        })
+        .catch(() => {});
+
+    await editMessage(
+      votingObj.chatId,
+      votingObj.messageId,
+      votingText(starter.user, candidate.user, votingObj, chatObj, reason)
+    );
+
     await bot.answerCallbackQuery(event.id, {
       text: "Пользователь был успешно разблокирован",
     });
   }
+  
+  votingObj.done = reason
+  await votingObj.save()
 });
 
 export { endVoting };

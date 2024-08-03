@@ -1,8 +1,9 @@
 import { Schema, model } from "mongoose";
 
 const cooldownSchema = new Schema({
-  userId: Number,
   chatId: Number,
+  userId: Number,
+  command: String,
   until: Number,
 });
 
