@@ -8,24 +8,31 @@ bot.onText("/cancel", async (msg) => {
     return;
   }
   const args = msg.text.split(" ").filter((value) => value != "");
-  if (args.length != 2)
+  let votingObj;
+  if (args.length == 2) {
+    try {
+      votingObj = await Voting.findById(args[1]);
+    } catch {
+      return await sendMessage(
+        msg.chat.id,
+        "Неправильное айди.",
+        undefined,
+        msg.message_id
+      );
+    }
+  } else if (msg?.reply_to_message) {
+    votingObj = await Voting.findOne({
+      messageId: msg.reply_to_message.message_id,
+    });
+  } else {
     return await sendMessage(
       msg.chat.id,
       "Использование:\n\n/cancel <b>[ID поста]</b>",
       undefined,
       msg.message_id
     );
-  let votingObj;
-  try {
-    votingObj = await Voting.findById(args[1]);
-  } catch {
-    return await sendMessage(
-      msg.chat.id,
-      "Неправильное айди.",
-      undefined,
-      msg.message_id
-    );
   }
+
   if (!votingObj)
     return await sendMessage(
       msg.chat.id,
@@ -59,6 +66,7 @@ bot.onText("/cancel", async (msg) => {
     votingText(starter.user, candidate.user, votingObj, chatObj, "cancel")
   );
   clearTimeout(votingObj.timeoutId);
+
   await sendMessage(
     msg.chat.id,
     "Успешно отменил голосование.",
