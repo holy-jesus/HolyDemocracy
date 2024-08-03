@@ -61,7 +61,6 @@ bot.onText("/block", async (msg) => {
 
 bot.on("callback_query", async (event) => {
   if (!event.data.startsWith("bl")) return;
-  console.log(event);
   const args = event.data.replace("bl", "").split("|");
   const chatId = args[0];
   const userId = args[1];

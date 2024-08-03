@@ -101,7 +101,6 @@ bot.on("callback_query", async (event) => {
     votingObj.candidateId
   );
   let reason
-  console.log(candidate);
 
   if (!votingObj) return;
 
