@@ -4,7 +4,7 @@
 
 Телеграм бот, который позволяет участникам чата начинать голосования на мут/кик участника. 
 
-Бот в телеграме: [@HolyDemocracyBot](t.me/HolyDemocracyBot)
+Бот в телеграме: [@HolyDemocracyBot](https://t.me/HolyDemocracyBot)
 
 ### Установка
 
