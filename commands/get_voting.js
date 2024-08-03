@@ -36,7 +36,7 @@ async function getVoting(msg) {
   if (votingId === null)
     return await sendMessage(
       msg.chat.id,
-      "Использование:\n\n/get_voting <b>[ID поста]</b>",
+      "Использование:\n\n/get_voting <b>[ID голосования]</b>",
       undefined,
       msg.message_id
     );
@@ -51,6 +51,7 @@ async function getVoting(msg) {
       msg.message_id
     );
   }
+
   if (!votingObj)
     return await sendMessage(
       msg.chat.id,

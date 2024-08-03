@@ -8,7 +8,6 @@ import { endVoting } from "./end_voting.js";
 /**
  *
  * @param {import("node-telegram-bot-api").CallbackQuery} event
- * @returns
  */
 async function onVote(event) {
   if (!event.data.startsWith("+") && !event.data.startsWith("-")) return;
