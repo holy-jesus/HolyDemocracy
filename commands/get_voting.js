@@ -1,5 +1,4 @@
 import { bot } from "../bot.js";
-import { getVotingInfoButtons } from "../buttons/voting_info.js";
 import { Voting } from "../models/index.js";
 import {
   getUserMention,
@@ -73,17 +72,23 @@ async function getVoting(msg) {
     yes: "Голосование закончилось, набралось необходимое количество голосов за.",
     no: "Голосование закончилось, набралось необходимое количество голосов против.",
     cancel: "Голосование отменил администратор.",
-    waiting: "Голосование закончилось, набралось необходимое количество голосов за. Ожидаем подтверждения от администратора.",
-    ban_yes: "Голосование закончилось, набралось необходимое количество голосов за. Администратор одобрил бан.",
-    ban_no: "Голосование закончилось, набралось необходимое количество голосов за. Администратор отклонил бан.",
+    waiting:
+      "Голосование закончилось, набралось необходимое количество голосов за. Ожидаем подтверждения от администратора.",
+    ban_yes:
+      "Голосование закончилось, набралось необходимое количество голосов за. Администратор одобрил бан.",
+    ban_no:
+      "Голосование закончилось, набралось необходимое количество голосов за. Администратор отклонил бан.",
     [null]: `Голосование продлится до ${votingObj.until.toLocaleString(
+      "ru-RU"
+    )}`,
+    [undefined]: `Голосование продлится до ${votingObj.until.toLocaleString(
       "ru-RU"
     )}`,
     [false]: `Голосование продлится до ${votingObj.until.toLocaleString(
       "ru-RU"
     )}`,
   }[votingObj.done];
-
+  console.log(votingObj.done);
   const message = await sendMessage(
     msg.chat.id,
     `Голосование:\n\n` +
@@ -95,7 +100,6 @@ async function getVoting(msg) {
       status +
       "\n\n" +
       `Голосов за ${votingObj.yes.length} из ${votingObj.neededYes}\n` +
-      `Голосов против ${votingObj.no.length} из ${votingObj.neededNo}`,
-      await getVotingInfoButtons(votingObj.chatId, votingObj.starterId)
+      `Голосов против ${votingObj.no.length} из ${votingObj.neededNo}`
   );
 }
