@@ -1,9 +1,10 @@
+import "./settings/index.js";
 import "./voting/index.js";
+import "./about.js";
 import "./block.js";
 import "./cancel.js";
 import "./get_voting.js";
 import "./reload.js";
-import "./settings/index.js";
 import "./start.js";
 import "./unblock.js";
 import "./vanish.js";
@@ -37,15 +38,13 @@ await bot.setMyCommands([
     description:
       "Разблокирует пользователя, чтобы он опять смог использовать бота (доступно только для администраторов)",
   },
+  {
+    command: "about",
+    description: "О боте (доступно только в личных сообщениях с ботом)",
+  },
+  {
+    command: "start",
+    description:
+      "Пишет стартовое сообщение (доступно только в личных сообщениях с ботом)",
+  },
 ]);
-
-import { Chat } from "../models/index.js";
-import { isCooldown, setCooldown } from "../utils.js";
-
-if (process.env.DEBUG) {
-  bot.onText("/debug", async (msg) => {
-    if (await isCooldown(msg.chat.id, undefined, "debug")) return;
-    await bot.sendMessage(msg.chat.id, "Привет!");
-    await setCooldown(msg.chat.id, 5, undefined, "debug");
-  });
-}

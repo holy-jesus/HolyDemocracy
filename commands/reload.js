@@ -1,5 +1,5 @@
 import { bot } from "../bot.js";
-import { getOrCreateChat, updateAdministrators } from "../utils.js";
+import { getOrCreateChat, isCooldown, setCooldown, updateAdministrators } from "../utils.js";
 
 
 bot.onText("/reload", async (msg) => {

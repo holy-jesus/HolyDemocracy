@@ -37,7 +37,7 @@ bot.onText("/block", async (msg) => {
 
     for (let chat of chats) {
       chatsButtons.push({
-        text: (await bot.getChat(chat._id)).title,
+        text: chat.title,
         callback_data: `bl${chat._id}|${userId}`,
       });
     }

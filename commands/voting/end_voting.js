@@ -42,7 +42,7 @@ async function endVoting(
       action: "mute",
       done: "yes",
     });
-
+    timeouts.push(votingObj)
     if (timeouts.length == 3) {
       const ids = [];
       for (let timeout of timeouts) {
@@ -59,7 +59,7 @@ async function endVoting(
         `Пользователь ${getUserMention(candidate)} ` +
           `[${candidate.id}] получил 3 таймаут.\n\n` +
           `ID голосований: ${ids.join(", ")}`,
-        getBanUserButton(candidate.id)
+        getBanUserButton(chatObj._id, candidate.id)
       );
     }
   } else if (reason == "yes" && votingObj.action == "ban") {
