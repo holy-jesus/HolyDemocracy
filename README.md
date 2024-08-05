@@ -1,14 +1,12 @@
 ## HolyDemocracy
 
-#### Бот пока что в очень раннем состоянии и пока не предназначен для использования.
-
 Телеграм бот, который позволяет участникам чата начинать голосования на мут/кик участника. 
 
 Бот в телеграме: [@HolyDemocracyBot](https://t.me/HolyDemocracyBot)
 
 ### Установка
 
-Для работы бота требуется MongoDB. [Инструкция по установке MongoDB.](https://www.mongodb.com/docs/manual/administration/install-community/)
+Для работы бота требуется MongoDB. [Инструкция по установке.](https://www.mongodb.com/docs/manual/administration/install-community/)
 
 Установка бота:
 
