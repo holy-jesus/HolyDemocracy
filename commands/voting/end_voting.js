@@ -46,7 +46,12 @@ async function endVoting(
     if (timeouts.length == 3) {
       const ids = [];
       for (let timeout of timeouts) {
-        ids.push(timeout._id.toString());
+        // ids.push(timeout._id.toString());
+        ids.push(
+          `<a href="https://t.me/c/${timeout.chatId.toString().slice(4)}/${
+            timeout.messageId
+          }">${timeout._id.toString()}</a>`
+        );
       }
 
       await sendToAllAdmins(
@@ -100,37 +105,39 @@ bot.on("callback_query", async (event) => {
     votingObj.chatId,
     votingObj.candidateId
   );
-  let reason
+  let reason;
 
   if (!votingObj) return;
 
   if (!(await isAdministrator(votingObj.chatId, event.from.id))) {
-    await bot.answerCallbackQuery(event.id, {
-      text: "Вы не являетесь администратором.",
-    }).catch(() => {});
+    await bot
+      .answerCallbackQuery(event.id, {
+        text: "Вы не являетесь администратором.",
+      })
+      .catch(() => {});
     return;
   }
 
   if (event.data.startsWith("conf")) {
-    reason = "ban_yes"
+    reason = "ban_yes";
 
     const success = await banUser(votingObj.chatId, votingObj.candidateId, 0);
 
-    await bot.answerCallbackQuery(event.id, {
-      text: success
-        ? "Пользователь был успешно заблокирован"
-        : "Произошла ошибка при блокировке пользователя",
-    }).catch(() => {});
+    await bot
+      .answerCallbackQuery(event.id, {
+        text: success
+          ? "Пользователь был успешно заблокирован"
+          : "Произошла ошибка при блокировке пользователя",
+      })
+      .catch(() => {});
 
     await editMessage(
       votingObj.chatId,
       votingObj.messageId,
       votingText(starter.user, candidate.user, votingObj, chatObj, reason)
     );
-
   } else {
-
-    reason = "ban_no"
+    reason = "ban_no";
 
     if (candidate.status == "restricted")
       await bot
@@ -147,13 +154,15 @@ bot.on("callback_query", async (event) => {
       votingText(starter.user, candidate.user, votingObj, chatObj, reason)
     );
 
-    await bot.answerCallbackQuery(event.id, {
-      text: "Пользователь был успешно разблокирован",
-    }).catch(() => {});
+    await bot
+      .answerCallbackQuery(event.id, {
+        text: "Пользователь был успешно разблокирован",
+      })
+      .catch(() => {});
   }
-  
-  votingObj.done = reason
-  await votingObj.save()
+
+  votingObj.done = reason;
+  await votingObj.save();
 });
 
 export { endVoting };
