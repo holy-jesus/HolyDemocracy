@@ -12,7 +12,10 @@ async function sendMainMenu(msg) {
   if (msg.chat.type == "private") {
     let chatObj = null;
     const chats = await Chat.find({
-      $or: [{ admins: msg.from.id, "settings.onlyCreatorCanAccessSettings": false }, { creator: msg.from.id }],
+      $or: [
+        { admins: msg.from.id, "settings.onlyCreatorCanAccessSettings": false },
+        { creator: msg.from.id },
+      ],
     });
 
     if (chats.length == 1) {
@@ -22,7 +25,7 @@ async function sendMainMenu(msg) {
         msg.chat.id,
         "Выберите чат:",
         getChatSelectionButtons("set", "|", chats)
-      );  
+      );
     }
 
     if (!chatObj) {
@@ -35,14 +38,28 @@ async function sendMainMenu(msg) {
 
     await sendMessage(
       msg.chat.id,
-      "Настройки чата <b>" +  chatObj.title + "</b>\n\n" +"Выберите нужную настройку:",
+      "Настройки чата <b>" +
+        chatObj.title +
+        "</b>\n\n" +
+        "Выберите нужную настройку:",
       getSettingsMainMenuButttons(chatObj.settings, chatObj.id)
     );
   } else {
     const chatObj = await Chat.findById(msg.chat.id);
+    if (
+      chatObj.creator != msg.from.id ||
+      (chatObj.admins.includes(msg.from.id) &&
+        chatObj.settings.onlyCreatorCanAccessSettings)
+    ) {
+      return;
+    }
+  
     const message = await sendMessage(
       msg.from.id,
-      "Настройки чата <b>" +  chatObj.title + "</b>\n\n" +"Выберите нужную настройку:",
+      "Настройки чата <b>" +
+        chatObj.title +
+        "</b>\n\n" +
+        "Выберите нужную настройку:",
       getSettingsMainMenuButttons(chatObj.settings, msg.chat.id)
     );
     if (message === false) {

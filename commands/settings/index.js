@@ -1,4 +1,5 @@
 import { bot } from "../../bot.js";
+import { Chat } from "../../models/index.js";
 import { sendMainMenu } from "./main_menu.js";
 import { sendSubMenu } from "./sub_menu.js";
 import { onNewValue } from "./on_new_value.js";
@@ -18,6 +19,22 @@ bot.onText("/settings", async (msg) => {
 });
 
 bot.on("callback_query", async (event) => {
+  if (!event.data.startsWith("set") && !event.data.startsWith("upd")) return;
+  let chatId = event.data.slice(3).split("|")[0];
+  if (
+    (await Chat.countDocuments({
+      $or: [
+        {
+          _id: chatId,
+          admins: event.from.id,
+          "settings.onlyCreatorCanAccessSettings": false,
+        },
+        { _id: chatId, creator: event.from.id },
+      ],
+    })) == 0
+  ) {
+    return;
+  }
   if (event.data.startsWith("set")) {
     await sendSubMenu(event);
   } else if (event.data.startsWith("upd")) {
