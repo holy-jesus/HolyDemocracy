@@ -17,12 +17,14 @@ async function onNewValue(msg) {
   if (!status) return;
   const chatObj = await Chat.findById(status.chatId);
   if (
-    chatObj.creator != msg.from.id ||
-    (chatObj.admins.includes(msg.from.id) &&
-      chatObj.settings.onlyCreatorCanAccessSettings)
+    chatObj.creator != msg.from.id &&
+    ((chatObj.admins.includes(msg.from.id) &&
+      chatObj.settings.onlyCreatorCanAccessSettings) ||
+      !chatObj.admins.includes(msg.from.id))
   ) {
     return;
   }
+
   const value = parseInt(msg.text);
   if (!settings[status.key].checkValue(value)) {
     await sendMessage(msg.chat.id, "Неверное значение, попробуйте ещё раз.");

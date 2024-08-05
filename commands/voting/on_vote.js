@@ -17,7 +17,7 @@ async function onVote(event) {
   if (votingObj.done) {
     await bot.answerCallbackQuery(event.id, {
       text: "Это голосование уже закончилось",
-    });
+    }).catch(() => {});
     return;
   }
 
@@ -49,7 +49,7 @@ async function onVote(event) {
 
   await bot.answerCallbackQuery(event.id, {
     text: `Вы успешно проголосовали ${actionText}`,
-  });
+  }).catch(() => {});
 
   const done = isVotingDone(votingObj);
 

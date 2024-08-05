@@ -15,14 +15,14 @@ async function askForNewValue(event) {
   if (!chatObj) {
     await bot.answerCallbackQuery(event.id, {
       text: "Произошла ошибка при обработке запроса, повторите попытку позже",
-    });
+    }).catch(() => {});
     return;
   }
   if (["onlyCreatorCanAccessSettings", "mentionOnlyCreator"].includes(key)) {
     if (event.from.id != chatObj.creator) {
       await bot.answerCallbackQuery(event.id, {
         text: "Только создатель чата может редактировать эту настройку",
-      });
+      }).catch(() => {});
       return;
     }
     chatObj.settings[key] = !chatObj.settings[key];
@@ -41,7 +41,7 @@ async function askForNewValue(event) {
     "Отправьте новое значение.\n\n" +
       settings[key].getValuesText(chatObj.settings[key])
   );
-  await bot.answerCallbackQuery(event.id);
+  await bot.answerCallbackQuery(event.id).catch(() => {});
 }
 
 export { askForNewValue };

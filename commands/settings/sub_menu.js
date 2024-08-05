@@ -11,7 +11,7 @@ import { getSettingsMainMenuButttons } from "../../buttons/settings_main_menu.js
  * @returns 
  */
 async function sendSubMenu(event) {
-  await bot.answerCallbackQuery(event.id);
+  await bot.answerCallbackQuery(event.id).catch(() => {});
   let [chatId, key] = event.data.slice(3).split("|");
   const chatObj = await Chat.findById(chatId);
   if (!key) {

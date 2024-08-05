@@ -107,7 +107,7 @@ bot.on("callback_query", async (event) => {
   if (!(await isAdministrator(votingObj.chatId, event.from.id))) {
     await bot.answerCallbackQuery(event.id, {
       text: "Вы не являетесь администратором.",
-    });
+    }).catch(() => {});
     return;
   }
 
@@ -120,7 +120,7 @@ bot.on("callback_query", async (event) => {
       text: success
         ? "Пользователь был успешно заблокирован"
         : "Произошла ошибка при блокировке пользователя",
-    });
+    }).catch(() => {});
 
     await editMessage(
       votingObj.chatId,
@@ -149,7 +149,7 @@ bot.on("callback_query", async (event) => {
 
     await bot.answerCallbackQuery(event.id, {
       text: "Пользователь был успешно разблокирован",
-    });
+    }).catch(() => {});
   }
   
   votingObj.done = reason

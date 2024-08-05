@@ -67,7 +67,7 @@ bot.on("callback_query", async (event) => {
   const userId = args[1];
   await bot.answerCallbackQuery(event.id, {
     text: await unblockUser(chatId, userId),
-  });
+  }).catch(() => {});
 });
 
 /**

@@ -47,13 +47,14 @@ async function sendMainMenu(msg) {
   } else {
     const chatObj = await Chat.findById(msg.chat.id);
     if (
-      chatObj.creator != msg.from.id ||
-      (chatObj.admins.includes(msg.from.id) &&
-        chatObj.settings.onlyCreatorCanAccessSettings)
+      chatObj.creator != msg.from.id &&
+      ((chatObj.admins.includes(msg.from.id) &&
+        chatObj.settings.onlyCreatorCanAccessSettings) ||
+        !chatObj.admins.includes(msg.from.id))
     ) {
       return;
     }
-  
+
     const message = await sendMessage(
       msg.from.id,
       "Настройки чата <b>" +
