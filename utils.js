@@ -216,7 +216,9 @@ async function countTimeouts(chatId, userId) {
  * @param {Boolean} start
  */
 async function deleteChat(chatId, start = false) {
+  await bot.leaveChat(chatId).catch(() => {});
   const chatObj = await Chat.findById(chatId);
+  if (!chatObj) return;
   for (let votingObj of await Voting.find({ chatId: chatId, done: null })) {
     if (!start) clearTimeout(votingObj.timeoutId);
     await votingObj.deleteOne();
@@ -225,8 +227,6 @@ async function deleteChat(chatId, start = false) {
     await blockObj.deleteOne();
   for (let cooldownObj of await Cooldown.find({ chatId: chatId }))
     await cooldownObj.deleteOne();
-  await chatObj.deleteOne();
-  await bot.leaveChat(chatId).catch(() => {});
 }
 
 /**
@@ -281,12 +281,8 @@ async function setCooldown(
  *
  * @param {Number} chatId
  */
-async function getOrCreateChat(chatId) {
-  let chat = await Chat.findById(chatId);
-  if (chat) return chat;
-  chat = new Chat({ _id: chatId });
-  await chat.save();
-  return chat;
+async function getOrCreateChat(chatId, title = null) {
+  return await Chat.findByIdAndUpdate(chatId, {$set: {_id: chatId, title: title}}, {upsert: true, new: true});
 }
 
 export {

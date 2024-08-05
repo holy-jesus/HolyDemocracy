@@ -3,7 +3,7 @@ import "./block.js";
 import "./cancel.js";
 import "./get_voting.js";
 import "./reload.js";
-import "./settings.js"
+import "./settings/index.js";
 import "./start.js";
 import "./unblock.js";
 import "./vanish.js";
@@ -24,6 +24,10 @@ await bot.setMyCommands([
       "Отображает информацию о голосовании (доступно только для администраторов)",
   },
   {
+    command: "settings",
+    description: "Настройки бота (доступно только для администраторов)",
+  },
+  {
     command: "block",
     description:
       "Блокирует пользователя, чтобы он не мог использовать команды /votemute и /voteban (доступно только для администраторов)",
@@ -40,8 +44,8 @@ import { isCooldown, setCooldown } from "../utils.js";
 
 if (process.env.DEBUG) {
   bot.onText("/debug", async (msg) => {
-    if (await isCooldown(msg.chat.id, undefined, "debug")) return
-    await bot.sendMessage(msg.chat.id, "Привет!")
-    await setCooldown(msg.chat.id, 5, undefined, "debug")
+    if (await isCooldown(msg.chat.id, undefined, "debug")) return;
+    await bot.sendMessage(msg.chat.id, "Привет!");
+    await setCooldown(msg.chat.id, 5, undefined, "debug");
   });
 }

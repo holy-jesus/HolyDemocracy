@@ -7,6 +7,7 @@ bot.on("new_chat_members", async (event) => {
     (await Chat.findById(event.chat.id)) ||
     new Chat({
       _id: event.chat.id,
+      title: event.chat.title
     });
   await updateAdministrators(chatObj);
   if (event.new_chat_members[0].id != botAccount.id) {

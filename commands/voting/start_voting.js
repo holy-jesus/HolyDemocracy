@@ -84,7 +84,7 @@ async function startVoting(msg, action) {
     neededYes:
       action == "mute"
         ? chatObj.settings.votesForMute
-        : chatObj.settings.votesForKick,
+        : chatObj.settings.votesForBan,
     no: [],
     neededNo: chatObj.settings.votesAgainst,
   });

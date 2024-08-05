@@ -1,9 +1,10 @@
 import Block from "./block.js";
 import Chat from "./chat.js";
 import Cooldown from "./cooldown.js";
+import Status from "./status.js";
 import Voting from "./voting.js";
-import { connect } from "mongoose";
+import mongoose from "mongoose";
 
-await connect(process.env.MONGODB_URL);
+await mongoose.connect(process.env.MONGODB_URL);
 
-export { Block, Chat, Cooldown, Voting };
+export { Block, Chat, Cooldown, Status, Voting };
