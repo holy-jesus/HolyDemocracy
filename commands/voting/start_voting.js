@@ -41,8 +41,12 @@ async function startVoting(msg, action) {
   // Проверки на возможность запустить голосование
   const candidate = await bot.getChatMember(msg.chat.id, candidateId);
   const existingVoting = await Voting.findOne({
-    $or: [{ candidateId: candidateId }, { candidateId: starter.id }],
-    $and: [{ done: null }],
+    $or: [
+      { candidateId: candidateId },
+      { candidateId: starter.id },
+      { starterId: starter.id },
+    ],
+    $and: [{ done: null, chatId: msg.chat.id }],
   });
   let errorText = null;
   if (
