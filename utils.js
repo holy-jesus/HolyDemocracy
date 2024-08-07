@@ -22,7 +22,6 @@ async function isAdministrator(chatId, userId) {
  * @returns {Promise<null>}
  */
 async function updateAdministrators(chatObj) {
-  if (await isCooldown(chatObj._id, undefined, "updateAdministrators")) return;
   const botChatMember = await bot.getChatMember(chatObj._id, botAccount.id);
   let admins = null;
   try {
@@ -45,7 +44,6 @@ async function updateAdministrators(chatObj) {
   chatObj.admins = adminsIDS;
   chatObj.creator = creatorID;
   await chatObj.save();
-  await setCooldown(chatObj._id, 60, undefined, "updateAdministrators");
 }
 
 /**
