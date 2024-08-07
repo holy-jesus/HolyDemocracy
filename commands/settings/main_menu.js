@@ -1,5 +1,5 @@
 import { Chat } from "../../models/index.js";
-import { sendMessage, getUserMention } from "../../utils.js";
+import { sendMessage, getUserMention, isAdministrator } from "../../utils.js";
 import { getSettingsMainMenuButttons } from "../../buttons/settings_main_menu.js";
 import { getChatSelectionButtons } from "../../buttons/select_chat.js";
 
@@ -45,15 +45,10 @@ async function sendMainMenu(msg) {
       getSettingsMainMenuButttons(chatObj.settings, chatObj.id)
     );
   } else {
-    const chatObj = await Chat.findById(msg.chat.id);
-    if (
-      chatObj.creator != msg.from.id &&
-      ((chatObj.admins.includes(msg.from.id) &&
-        chatObj.settings.onlyCreatorCanAccessSettings) ||
-        !chatObj.admins.includes(msg.from.id))
-    ) {
+    if (await isAdministrator(msg.chat.id, msg.from.id) == false) {
       return;
     }
+    const chatObj = await Chat.findById(msg.chat.id);
 
     const message = await sendMessage(
       msg.from.id,

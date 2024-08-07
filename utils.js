@@ -12,7 +12,7 @@ async function isAdministrator(chatId, userId) {
     (await Chat.findOne({
       _id: chatId,
       $or: [{ creator: userId }, { admins: userId }],
-    })) !== null
+    })) !== null || userId == 1087968824 // 1087968824 - GroupAnonymousBot
   );
 }
 
@@ -30,8 +30,12 @@ async function updateAdministrators(chatObj) {
     return;
   }
   let adminsIDS = [];
-  if (botChatMember.status == "administrator" && botChatMember.can_restrict_members && botChatMember.can_delete_messages) {
-    adminsIDS.push(botAccount.id)
+  if (
+    botChatMember.status == "administrator" &&
+    botChatMember.can_restrict_members &&
+    botChatMember.can_delete_messages
+  ) {
+    adminsIDS.push(botAccount.id);
   }
   let creatorID = 0;
   for (let admin of admins) {
