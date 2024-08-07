@@ -23,6 +23,7 @@ async function isAdministrator(chatId, userId) {
  */
 async function updateAdministrators(chatObj) {
   if (await isCooldown(chatObj._id, undefined, "updateAdministrators")) return;
+  const botChatMember = await bot.getChatMember(chatObj._id, botAccount.id);
   let admins = null;
   try {
     admins = await bot.getChatAdministrators(chatObj._id);
@@ -30,6 +31,9 @@ async function updateAdministrators(chatObj) {
     return;
   }
   let adminsIDS = [];
+  if (botChatMember.status == "administrator" && botChatMember.can_restrict_members && botChatMember.can_delete_messages) {
+    adminsIDS.push(botAccount.id)
+  }
   let creatorID = 0;
   for (let admin of admins) {
     if (admin.status == "creator") {
@@ -41,7 +45,7 @@ async function updateAdministrators(chatObj) {
   chatObj.admins = adminsIDS;
   chatObj.creator = creatorID;
   await chatObj.save();
-  await setCooldown(chatObj._id, 60, undefined, "updateAdministrators")
+  await setCooldown(chatObj._id, 60, undefined, "updateAdministrators");
 }
 
 /**
@@ -284,7 +288,11 @@ async function setCooldown(
  * @param {Number} chatId
  */
 async function getOrCreateChat(chatId, title = null) {
-  return await Chat.findByIdAndUpdate(chatId, {$set: {_id: chatId, title: title}}, {upsert: true, new: true});
+  return await Chat.findByIdAndUpdate(
+    chatId,
+    { $set: { _id: chatId, title: title } },
+    { upsert: true, new: true }
+  );
 }
 
 export {
