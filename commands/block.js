@@ -42,7 +42,7 @@ bot.onText("/block", async (msg) => {
       });
     }
     await sendMessage(msg.chat.id, "Выберите необходимый чат:", [chatsButtons]);
-  } else if (isAdministrator(msg.chat.id, msg.from.id)) {
+  } else if (await isAdministrator(msg.chat.id, msg.from.id)) {
     let userId = getOnlyFirstArgument(msg.text);
     if (!userId && msg.reply_to_message) {
       userId = msg.reply_to_message.from.id;
