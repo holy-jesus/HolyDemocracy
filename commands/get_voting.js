@@ -1,11 +1,11 @@
-import { bot } from "../bot.js";
-import { Voting } from "../models/index.js";
+import { bot } from "#root/bot.js";
+import { Voting } from "#root/models/index.js";
 import {
   getUserMention,
   isAdministrator,
   sendMessage,
   getOnlyFirstArgument,
-} from "../utils.js";
+} from "#root/utils.js";
 
 bot.onText("/get_voting", async (msg) => {
   await getVoting(msg);

@@ -1,4 +1,4 @@
-import { Chat } from "../models/index.js";
+import { Chat } from "#root/models/index.js";
 
 const names = {
   onlyCreatorCanAccessSettings: "Доступ к настройкам",

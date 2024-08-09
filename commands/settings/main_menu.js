@@ -1,7 +1,7 @@
-import { Chat } from "../../models/index.js";
-import { sendMessage, getUserMention, isAdministrator } from "../../utils.js";
-import { getSettingsMainMenuButttons } from "../../buttons/settings_main_menu.js";
-import { getChatSelectionButtons } from "../../buttons/select_chat.js";
+import { Chat } from "#root/models/index.js";
+import { sendMessage, getUserMention, isAdministrator } from "#root/utils.js";
+import { getSettingsMainMenuButttons } from "#root/buttons/settings_main_menu.js";
+import { getChatSelectionButtons } from "#root/buttons/select_chat.js";
 
 /**
  *

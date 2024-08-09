@@ -1,8 +1,8 @@
-import { bot } from "../../bot.js";
-import { getBanUserButton } from "../../buttons/ban_user.js";
-import { getVotingBanDecision } from "../../buttons/voting_ban.js";
+import { bot } from "#root/bot.js";
+import { getBanUserButton } from "#root/buttons/ban_user.js";
+import { getVotingBanDecision } from "#root/buttons/voting_ban.js";
 
-import { Chat, Voting } from "../../models/index.js";
+import { Chat, Voting } from "#root/models/index.js";
 import {
   editMessage,
   getUserMention,
@@ -11,8 +11,8 @@ import {
   countTimeouts,
   isAdministrator,
   banUser,
-} from "../../utils.js";
-import { votingText } from "./format_text.js";
+} from "#root/utils.js";
+import { votingText } from "#root/commands/voting/format_text.js";
 
 /**
  *

@@ -1,9 +1,9 @@
-import { bot } from "../../bot.js";
-import { Chat, Voting } from "../../models/index.js";
-import { votingText } from "./format_text.js";
-import { editMessage, isVotingDone } from "../../utils.js";
-import { getVotingButtons } from "../../buttons/voting.js";
-import { endVoting } from "./end_voting.js";
+import { bot } from "#root/bot.js";
+import { Chat, Voting } from "#root/models/index.js";
+import { votingText } from "#root/commands/voting/format_text.js";
+import { editMessage, isVotingDone } from "#root/utils.js";
+import { getVotingButtons } from "#root/buttons/voting.js";
+import { endVoting } from "#root/commands/voting/end_voting.js";
 
 /**
  *

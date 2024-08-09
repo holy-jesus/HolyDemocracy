@@ -1,7 +1,7 @@
-import { getSettingsGoBackButtons } from "../../buttons/settings_go_back.js";
-import { Chat, Status } from "../../models/index.js";
-import { sendMessage } from "../../utils.js";
-import { settings } from "./settings.js";
+import { getSettingsGoBackButtons } from "#root/buttons/settings_go_back.js";
+import { Chat, Status } from "#root/models/index.js";
+import { sendMessage } from "#root/utils.js";
+import { settings } from "#root/commands/settings/settings.js";
 
 /**
  *

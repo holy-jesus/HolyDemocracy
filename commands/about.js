@@ -1,5 +1,5 @@
-import { bot } from "../bot.js";
-import { sendMessage } from "../utils.js";
+import { bot } from "#root/bot.js";
+import { sendMessage } from "#root/utils.js";
 
 bot.onText("/about", async (msg) => {
   if (msg.chat.type != "private") return;

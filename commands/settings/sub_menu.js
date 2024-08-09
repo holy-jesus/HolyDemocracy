@@ -1,9 +1,9 @@
-import { bot } from "../../bot.js";
-import { getSettingsSubMenuButtons } from "../../buttons/settings_sub_menu.js";
-import { Chat } from "../../models/index.js";
-import { settings } from "./settings.js";
-import { editMessage } from "../../utils.js";
-import { getSettingsMainMenuButttons } from "../../buttons/settings_main_menu.js";
+import { bot } from "#root/bot.js";
+import { getSettingsSubMenuButtons } from "#root/buttons/settings_sub_menu.js";
+import { Chat } from "#root/models/index.js";
+import { settings } from "#root/commands/settings/settings.js";
+import { editMessage } from "#root/utils.js";
+import { getSettingsMainMenuButttons } from "#root/buttons/settings_main_menu.js";
 
 /**
  * 

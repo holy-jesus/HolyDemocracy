@@ -29,7 +29,6 @@ npm run start
 
 ### TODO
 
-- Перейти от relative импортов к absolute
 - Перейти к ENUMS от фиг пойми чего
 - i18n
 - Добавить комментарии

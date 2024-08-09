@@ -1,15 +1,15 @@
-import { bot, botAccount } from "../../bot.js";
-import { Chat, Voting } from "../../models/index.js";
+import { bot, botAccount } from "#root/bot.js";
+import { Chat, Voting } from "#root/models/index.js";
 import {
   isAdministrator,
   getUserMention,
   sendMessage,
   setCooldown,
   isCooldown,
-} from "../../utils.js";
-import { getVotingButtons } from "../../buttons/voting.js";
-import { votingText } from "./format_text.js";
-import { endVoting } from "./end_voting.js";
+} from "#root/utils.js";
+import { getVotingButtons } from "#root/buttons/voting.js";
+import { votingText } from "#root/commands/voting/format_text.js";
+import { endVoting } from "#root/commands/voting/end_voting.js";
 
 /**
  * @param {import("node-telegram-bot-api").Message} msg

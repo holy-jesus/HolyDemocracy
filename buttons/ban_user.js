@@ -15,8 +15,7 @@ function getBanUserButton(chatId, candidateId) {
   ];
 }
 
-import { bot } from "../bot.js";
-import { banUser } from "../utils.js";
+import { bot } from "#root/bot.js";
 
 bot.on("callback_query", async (event) => {
   if (!event.data.startsWith("ban")) return;

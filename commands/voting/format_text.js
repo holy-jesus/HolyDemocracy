@@ -1,6 +1,5 @@
-import { bot } from "../../bot.js";
-import { Chat, Voting } from "../../models/index.js";
-import { getUserMention } from "../../utils.js";
+import { Chat, Voting } from "#root/models/index.js";
+import { getUserMention } from "#root/utils.js";
 
 /**
  *

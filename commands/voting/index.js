@@ -1,7 +1,7 @@
-import { bot } from "../../bot.js";
-import { startVoting } from "./start_voting.js";
-import { onVote } from "./on_vote.js";
-import { isBlocked } from "../../utils.js";
+import { bot } from "#root/bot.js";
+import { startVoting } from "#root/commands/voting/start_voting.js";
+import { onVote } from "#root/commands/voting/on_vote.js";
+import { isBlocked } from "#root/utils.js";
 
 bot.onText("/votemute", async (msg) => {
   if (await isBlocked(msg.chat.id, msg.from.id)) return;

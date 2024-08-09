@@ -1,8 +1,8 @@
-import { bot } from "../../bot.js";
-import { Chat, Status } from "../../models/index.js";
-import { sendSubMenu } from "./sub_menu.js";
-import { editMessage } from "../../utils.js";
-import { settings } from "./settings.js";
+import { bot } from "#root/bot.js";
+import { Chat, Status } from "#root/models/index.js";
+import { editMessage } from "#root/utils.js";
+import { sendSubMenu } from "#root/commands/settings/sub_menu.js";
+import { settings } from "#root/commands/settings/settings.js";
 
 /**
  * 

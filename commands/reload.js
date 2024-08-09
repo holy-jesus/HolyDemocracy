@@ -1,10 +1,10 @@
-import { bot } from "../bot.js";
+import { bot } from "#root/bot.js";
 import {
   getOrCreateChat,
   isCooldown,
   setCooldown,
   updateAdministrators,
-} from "../utils.js";
+} from "#root/utils.js";
 
 bot.onText("/reload", async (msg) => {
   if (msg.chat.type == "private") return;

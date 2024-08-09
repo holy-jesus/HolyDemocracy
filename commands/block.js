@@ -1,10 +1,10 @@
-import { bot } from "../bot.js";
-import { Chat, Block } from "../models/index.js";
+import { bot } from "#root/bot.js";
+import { Chat, Block } from "#root/models/index.js";
 import {
   isAdministrator,
   sendMessage,
   getOnlyFirstArgument,
-} from "../utils.js";
+} from "#root/utils.js";
 
 bot.onText("/block", async (msg) => {
   if (msg.chat.type == "private") {

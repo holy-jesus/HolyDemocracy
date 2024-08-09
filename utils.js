@@ -1,5 +1,5 @@
-import { Chat, Voting, Block, Cooldown } from "./models/index.js";
-import { bot, botAccount } from "./bot.js";
+import { Chat, Voting, Block, Cooldown } from "#root/models/index.js";
+import { bot, botAccount } from "#root/bot.js";
 
 /**
  *

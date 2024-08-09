@@ -13,5 +13,9 @@
     "mongoose": "^8.5.1",
     "node-telegram-bot-api": "^0.66.0"
   },
-  "type": "module"
+  "type": "module",
+  "imports": {
+    "#root/*.js": "./*.js",
+    "@/*.js": "./*.js"
+  }
 }

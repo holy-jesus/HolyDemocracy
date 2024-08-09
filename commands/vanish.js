@@ -1,5 +1,5 @@
-import { bot } from "../bot.js";
-import { isAdministrator, timeoutUser } from "../utils.js";
+import { bot } from "#root/bot.js";
+import { isAdministrator, timeoutUser } from "#root/utils.js";
 
 bot.onText("/vanish", async (msg) => {
   if (
