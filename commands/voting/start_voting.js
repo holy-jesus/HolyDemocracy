@@ -38,6 +38,14 @@ async function startVoting(msg, action) {
     );
   }
 
+  if (await isCooldown(msg.chat.id, undefined, `cooldown${candidateId}`)) {
+    return await sendMessage(
+      msg.chat.id,
+      getUserMention(starter) +
+        ", вы не можете начать голосование на этого человека сейчас."
+    );
+  }
+
   // Проверки на возможность запустить голосование
   const candidate = await bot.getChatMember(msg.chat.id, candidateId);
   const existingVoting = await Voting.findOne({

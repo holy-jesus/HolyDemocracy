@@ -41,8 +41,7 @@ function votingText(starter, candidate, votingObj, chatObj, reason = null) {
     )}\n\n` +
     `За: ${votingObj.yes.length} из ${chatObj.settings.votesForMute}\n` +
     `Против: ${votingObj.no.length} из ${chatObj.settings.votesAgainst}\n\n` +
-    reasonText +
-    `\n\nID голосования: ${votingObj._id.toString()}`
+    reasonText
   );
 }
 

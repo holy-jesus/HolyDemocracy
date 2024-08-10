@@ -11,6 +11,7 @@ import {
   countTimeouts,
   isAdministrator,
   banUser,
+  setCooldown
 } from "#root/utils.js";
 import { votingText } from "#root/commands/voting/format_text.js";
 
@@ -88,6 +89,7 @@ async function endVoting(
   );
   votingObj.done = reason;
   await votingObj.save();
+  await setCooldown(chatObj._id, 180, undefined, `cooldown${candidate.id}`)
 }
 
 bot.on("callback_query", async (event) => {

@@ -3,7 +3,6 @@ import "#root/commands/voting/index.js";
 import "#root/commands/about.js";
 import "#root/commands/block.js";
 import "#root/commands/cancel.js";
-import "#root/commands/get_voting.js";
 import "#root/commands/reload.js";
 import "#root/commands/start.js";
 import "#root/commands/unblock.js";
@@ -18,11 +17,6 @@ await bot.setMyCommands([
   {
     command: "cancel",
     description: "Отменяет голосование (доступно только для администраторов)",
-  },
-  {
-    command: "get_voting",
-    description:
-      "Отображает информацию о голосовании (доступно только для администраторов)",
   },
   {
     command: "settings",
