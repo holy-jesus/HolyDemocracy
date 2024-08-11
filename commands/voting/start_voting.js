@@ -42,7 +42,7 @@ async function startVoting(msg, action) {
     return await sendMessage(
       msg.chat.id,
       getUserMention(starter) +
-        ", вы не можете начать голосование на этого человека сейчас."
+        ", вы не можете начать голосование на этого человека пока что."
     );
   }
 
