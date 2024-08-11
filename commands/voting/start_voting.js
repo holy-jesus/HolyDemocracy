@@ -61,8 +61,8 @@ async function startVoting(msg, action) {
     candidateId == starter.id ||
     candidateId == botAccount.id ||
     candidate.user.is_bot ||
-    candidate.status != "member"
-  ) {
+    ((action == "mute" && candidate.status != "member") || (action == "ban" && candidate.status != "member" && candidate.status != "restricted"))
+  ) { 
     errorText =
       getUserMention(starter) +
       ", вы не можете использовать эту команду на этого пользователя.";
