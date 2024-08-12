@@ -22,7 +22,7 @@ bot.on("callback_query", async (event) => {
   let text = "";
   await bot.banChatMember(chatId, userId).then(
     async () => {
-      text = "Пользователь был успешно заблокирован";
+      text = "Пользователь был успешно забанен";
     },
     async () => {
       text = "Произошла ошибка при блокировке пользователя";

@@ -9,12 +9,12 @@ function getActionsButtons(votingObj, thirdTimeout) {
   const row = [];
   if (votingObj.action == "mute") {
     row.push({
-      text: "Отменить ограничения",
+      text: "Снять таймаут",
       callback_data: "unt" + votingObj._id.toString(),
     });
     if (thirdTimeout)
       row.push({
-        text: "Забанить пользователя",
+        text: "Забанить кандидата",
         callback_data: `ban${votingObj.chatId}|${votingObj.candidateId}`,
       });
   } else {
@@ -39,8 +39,22 @@ function getVoteNotificationButtons(votingObj, thirdTimeout) {
     getActionsButtons(votingObj, thirdTimeout),
     [
       {
+        text: "Заблокировать начавшего голосование",
+        callback_data: `blo${votingObj.chatId}|${votingObj.candidateId}`,
+      },
+    ],
+    [
+      {
+        text: "Разблокировать начавшего голосование",
+        callback_data: `unb${votingObj.chatId}|${votingObj.candidateId}`,
+      },
+    ],
+    [
+      {
         text: "Перейти к голосованию",
-        url: `https://t.me/c/${votingObj.chatId.toString().slice(4)}/${votingObj.messageId}`,
+        url: `https://t.me/c/${votingObj.chatId.toString().slice(4)}/${
+          votingObj.messageId
+        }`,
       },
     ],
   ];

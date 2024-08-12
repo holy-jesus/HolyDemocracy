@@ -56,19 +56,22 @@ async function notifyAdmins(chatObj, votingObj, starter, candidate, reason) {
       voter = (await bot.getChatMember(votingObj.chatId, userId)).user;
 
     no.push(getUserMention({ username: voter.username, id: userId }));
-    //no.push(getUserMention((await bot.getChatMember(votingObj.chatId, userId)).user))
   }
 
-  const timeouts = await Voting.find({
-    chatId: chatObj._id,
-    candidateId: candidate.id,
-    action: "mute",
-    done: "yes",
-  });
-  const thirdTimeout = timeouts.length == 3;
+  let thirdTimeout = false;
 
-  if (thirdTimeout) {
-    additionalText = "Это уже третий таймаут этого пользователя.";
+  if (votingObj.action == "mute") {
+    const timeouts = await Voting.find({
+      chatId: chatObj._id,
+      candidateId: candidate.id,
+      action: "mute",
+      done: "yes",
+    });
+    thirdTimeout = timeouts.length == 3;
+    additionalText = `Это ${timeouts.length} таймаут этого пользователя.`;
+  } else if (votingObj.action == "ban") {
+    additionalText =
+      "Пользователь находится в таймауте до вашего подтверждения.";
   }
 
   const text =
@@ -84,7 +87,11 @@ async function notifyAdmins(chatObj, votingObj, starter, candidate, reason) {
       votingObj.neededNo
     }): ${no.join(", ")}\n\n` +
     additionalText;
-  await sendToAllAdmins(chatObj, text, getVoteNotificationButtons(votingObj));
+  await sendToAllAdmins(
+    chatObj,
+    text,
+    getVoteNotificationButtons(votingObj, thirdTimeout)
+  );
 }
 
 /**
@@ -109,22 +116,6 @@ async function endVoting(
   if (reason == "yes" && votingObj.action == "mute") {
     await timeoutUser(chatObj._id, candidate.id, chatObj.settings.muteTime);
   } else if (reason == "yes" && votingObj.action == "ban") {
-    // buttons = getVotingBanDecision(votingObj._id.toString());
-
-    // await sendToAllAdmins(
-    //   chatObj,
-    //   `Голосование на бан участника ${getUserMention(
-    //     candidate
-    //   )} успешно завершился, он находится в таймауте до вашего подтверждения\n\n` +
-    //     hyperlink(
-    //       `https://t.me/c/${votingObj.chatId.toString().slice(4)}/${
-    //         votingObj.messageId
-    //       }`,
-    //       "Перейти к голосованию"
-    //     ),
-    //   buttons
-    // );
-
     await timeoutUser(chatObj._id, candidate.id, 0);
 
     reason = "waiting";
