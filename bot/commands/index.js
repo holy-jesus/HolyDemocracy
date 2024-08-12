@@ -7,6 +7,9 @@ import "#root/bot/commands/reload.js";
 import "#root/bot/commands/start.js";
 import "#root/bot/commands/unblock.js";
 import "#root/bot/commands/vanish.js";
+if (process.env.DEBUG) {
+  import("#root/bot/commands/testing.js")
+}
 
 import { bot } from "../bot.js";
 
