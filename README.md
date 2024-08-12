@@ -21,8 +21,6 @@ npm i
 2) В `TOKEN` вставить токен бота полученный от [@BotFather](https://t.me/BotFather);
 3) __(Опционально)__ Для того чтобы команды работали через пинг надо создать приложение [по этой ссылке](https://my.telegram.org/apps) и вставить `App api_id` -> `API_ID` и `App api_hash` -> `API_HASH`
 
-то нужно убрать `USERNAME:PASSWORD@`
-
 Для запуска:
 
 ```
