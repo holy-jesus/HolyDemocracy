@@ -28,9 +28,3 @@ const bot = new TelegramBot(process.env.TOKEN, {
 const botAccount = await bot.getMe();
 
 export { bot, botAccount };
-
-if (process.env.DEBUG) {
-  bot.on("message", async (msg) => {
-    console.log(msg)
-   })
-}
