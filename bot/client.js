@@ -33,10 +33,9 @@ const isClientInitialized = Boolean(client)
 async function getUserIdFromLogin(login) {
   if (!client) return;
   const entity = await client.getEntity(login).catch(() => {});
-  console.log(entity)
   if (!entity) return;
   if (entity?.className != "User") return;
-  return entity?.id?.value ? Number(entity?.id?.value) : undefined;
+  return entity?.id?.value ? Number(entity.id.value) : undefined;
 }
 
 export { isClientInitialized, getUserIdFromLogin };
