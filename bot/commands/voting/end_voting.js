@@ -82,7 +82,8 @@ async function notifyAdmins(chatObj, votingObj, starter, candidate, reason) {
     }): ${yes.join(", ")}\n` +
     `Против проголосовали (${votingObj.no.length}/${
       votingObj.neededNo
-    }): ${no.join(", ")}\n`;
+    }): ${no.join(", ")}\n\n` +
+    additionalText;
   await sendToAllAdmins(chatObj, text, getVoteNotificationButtons(votingObj));
 }
 
@@ -133,7 +134,9 @@ async function endVoting(
     votingObj.chatId,
     votingObj.messageId,
     votingText(starter, candidate, votingObj, chatObj, reason),
-    reason == "waiting" ? getVotingBanDecision(votingObj._id.toString()) : undefined
+    reason == "waiting"
+      ? getVotingBanDecision(votingObj._id.toString())
+      : undefined
   );
 
   votingObj.done = reason;

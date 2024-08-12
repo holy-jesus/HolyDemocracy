@@ -24,7 +24,7 @@ async function startVoting(msg, action) {
     );
   }
   if (await isBlocked(msg.chat.id, msg.from.id)) return;
-  if (await isCooldown(msg.chat.id, msg.from.id, "vote")) {
+  if (!process.env.DEBUG && await isCooldown(msg.chat.id, msg.from.id, "vote")) {
     return await sendMessage(
       msg.chat.id,
       getUserMention(starter) + ", у вас сейчас КД."
@@ -77,7 +77,7 @@ async function startVoting(msg, action) {
     );
   }
 
-  if (await isCooldown(msg.chat.id, undefined, `cooldown${candidateId}`)) {
+  if (!process.env.DEBUG && await isCooldown(msg.chat.id, undefined, `cooldown${candidateId}`)) {
     return await sendMessage(
       msg.chat.id,
       getUserMention(starter) +
@@ -127,7 +127,7 @@ async function startVoting(msg, action) {
       getUserMention(starter) +
       ", я не могу начать голосование, пока у меня нету прав администратора.";
   }
-  if (errorText) return await sendMessage(msg.chat.id, errorText);
+  if (!process.env.DEBUG && errorText) return await sendMessage(msg.chat.id, errorText);
 
   // Создаём новое голосование и отправляем его в чат
   const votingUntil = new Date(
