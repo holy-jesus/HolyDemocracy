@@ -18,7 +18,10 @@ import { getUserIdFromLogin, isClientInitialized } from "#root/bot/client.js";
  */
 async function startVoting(msg, action) {
   if (msg.chat.type == "private") {
-    return await sendMessage(msg.chat.id, "Эта команда не работает в личных сообщениях с ботом.")
+    return await sendMessage(
+      msg.chat.id,
+      "Эта команда не работает в личных сообщениях с ботом."
+    );
   }
   if (await isBlocked(msg.chat.id, msg.from.id)) return;
   if (await isCooldown(msg.chat.id, msg.from.id, "vote")) {
@@ -83,7 +86,18 @@ async function startVoting(msg, action) {
   }
 
   // Проверки на возможность запустить голосование
-  const candidate = await bot.getChatMember(msg.chat.id, candidateId);
+  const candidate = await bot
+    .getChatMember(msg.chat.id, candidateId)
+    .catch(() => {});
+
+  if (!candidate) {
+    return await sendMessage(
+      msg.chat.id,
+      getUserMention(starter) +
+        ", вы не можете начать голосование на этого пользователя."
+    );
+  }
+  
   const existingVoting = await Voting.findOne({
     $or: [
       { candidateId: candidateId },
