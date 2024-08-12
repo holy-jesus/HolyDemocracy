@@ -1,4 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
+import { getUserIdFromLogin } from "#root/bot/client.js";
+
 
 const bot = new TelegramBot(process.env.TOKEN, {
   polling: {
@@ -26,3 +28,9 @@ const bot = new TelegramBot(process.env.TOKEN, {
 const botAccount = await bot.getMe();
 
 export { bot, botAccount };
+
+if (process.env.DEBUG) {
+  bot.on("message", async (msg) => {
+    console.log(msg)
+   })
+}

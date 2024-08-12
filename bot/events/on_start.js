@@ -1,6 +1,6 @@
-import { Chat, Voting } from "../models/index.js";
+import { Chat, Voting } from "../../models/index.js";
 import { bot } from "../bot.js";
-import { isVotingDone, updateAdministrators, deleteChat } from "../utils.js";
+import { isVotingDone, updateAdministrators, deleteChat } from "../../utils.js";
 import { endVoting } from "../commands/voting/end_voting.js";
 
 for (let chatObj of await Chat.find()) {

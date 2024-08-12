@@ -1,4 +1,4 @@
-import { bot, botAccount } from "#root/bot.js";
+import { bot, botAccount } from "#root/bot/bot.js";
 import { Chat, Voting } from "#root/models/index.js";
 import {
   isAdministrator,
@@ -7,15 +7,22 @@ import {
   setCooldown,
   isCooldown,
 } from "#root/utils.js";
-import { getVotingButtons } from "#root/buttons/voting.js";
-import { votingText } from "#root/commands/voting/format_text.js";
-import { endVoting } from "#root/commands/voting/end_voting.js";
+import { getVotingButtons } from "#root/bot/buttons/voting.js";
+import { votingText } from "#root/bot/commands/voting/format_text.js";
+import { endVoting } from "#root/bot/commands/voting/end_voting.js";
+import { getUserIdFromLogin, isClientInitialized } from "#root/bot/client.js";
 
 /**
  * @param {import("node-telegram-bot-api").Message} msg
  * @param {String} action
  */
 async function startVoting(msg, action) {
+  if (await isCooldown(msg.chat.id, msg.from.id, "vote")) {
+    return await sendMessage(
+      msg.chat.id,
+      getUserMention(starter) + ", у вас сейчас КД."
+    );
+  }
   const chatObj = await Chat.findById(msg.chat.id);
   const starter = msg.from;
 
@@ -24,17 +31,42 @@ async function startVoting(msg, action) {
   const textMention = msg.entities.find(
     (value) => value.type == "text_mention"
   );
+  const mention = msg.entities.find((value) => value.type == "mention");
   if (msg.reply_to_message) {
     candidateId = msg.reply_to_message.from.id;
   } else if (textMention) {
     candidateId = textMention.user.id;
+  } else if (isClientInitialized && mention) {
+    const login = msg.text.slice(
+      mention.offset,
+      mention.offset + mention.length
+    );
+    candidateId = await getUserIdFromLogin(login);
   }
 
-  if (!candidateId || candidateId == null) {
+  if (isClientInitialized && mention && !candidateId) {
     return await sendMessage(
       msg.chat.id,
       getUserMention(starter) +
-        ", чтобы использовать эту команду вы должны ответить на сообщение нужного человека с этой командой."
+        `, вы не можете начать голосование на этого пользователя.`
+    );
+  } else if (!isClientInitialized && mention && !candidateId) {
+    return await sendMessage(
+      msg.chat.id,
+      getUserMention(starter) +
+        ", чтобы использовать эту команду вы должны ответить на сообщение нужного пользователя с этой командой."
+    );
+  } else if (isClientInitialized && !mention && !candidateId) {
+    return await sendMessage(
+      msg.chat.id,
+      getUserMention(starter) +
+        `, чтобы использовать эту команду с упоминанием нужного пользователя \`/vote${action}\`, либо ответив на его сообщение.`
+    );
+  } else if (!isClientInitialized && !candidateId) {
+    return await sendMessage(
+      msg.chat.id,
+      getUserMention(starter) +
+        `, чтобы использовать эту команду вы должны ответить на сообщение нужного пользователя с этой командой.`
     );
   }
 
@@ -42,7 +74,7 @@ async function startVoting(msg, action) {
     return await sendMessage(
       msg.chat.id,
       getUserMention(starter) +
-        ", вы не можете начать голосование на этого человека пока что."
+        ", вы не можете начать голосование на этого пользователя пока что."
     );
   }
 
@@ -61,8 +93,11 @@ async function startVoting(msg, action) {
     candidateId == starter.id ||
     candidateId == botAccount.id ||
     candidate.user.is_bot ||
-    ((action == "mute" && candidate.status != "member") || (action == "ban" && candidate.status != "member" && candidate.status != "restricted"))
-  ) { 
+    (action == "mute" && candidate.status != "member") ||
+    (action == "ban" &&
+      candidate.status != "member" &&
+      candidate.status != "restricted")
+  ) {
     errorText =
       getUserMention(starter) +
       ", вы не можете использовать эту команду на этого пользователя.";
@@ -73,8 +108,6 @@ async function startVoting(msg, action) {
     errorText =
       getUserMention(starter) +
       ", я не могу начать голосование, пока у меня нету прав администратора.";
-  } else if (await isCooldown(msg.chat.id, msg.from.id, "vote")) {
-    errorText = getUserMention(starter) + ", у вас сейчас КД.";
   }
   if (errorText) return await sendMessage(msg.chat.id, errorText);
 
@@ -114,12 +147,6 @@ async function startVoting(msg, action) {
   votingObj.messageId = votingMessage.message_id;
   votingObj.timeoutId = timeoutId[Symbol.toPrimitive]();
   await votingObj.save();
-  await setCooldown(
-    msg.chat.id,
-    chatObj.settings.cooldown,
-    msg.from.id,
-    "vote"
-  );
 }
 
 export { startVoting };

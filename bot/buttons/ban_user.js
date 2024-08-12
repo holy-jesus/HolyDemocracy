@@ -4,7 +4,6 @@
  * @returns {import("node-telegram-bot-api").InlineKeyboardButton[][]}
  */
 function getBanUserButton(chatId, candidateId) {
-  console.log(`ban${chatId}|${candidateId}`);
   return [
     [
       {
@@ -15,15 +14,19 @@ function getBanUserButton(chatId, candidateId) {
   ];
 }
 
-import { bot } from "#root/bot.js";
+import { bot } from "#root/bot/bot.js";
 
 bot.on("callback_query", async (event) => {
   if (!event.data.startsWith("ban")) return;
   let [chatId, userId] = event.data.slice(3).split("|");
-  let text = ""
+  let text = "";
   await bot.banChatMember(chatId, userId).then(
-    async () => {text = "Пользователь был успешно заблокирован"},
-    async () => {text = "Произошла ошибка при блокировке пользователя"}
+    async () => {
+      text = "Пользователь был успешно заблокирован";
+    },
+    async () => {
+      text = "Произошла ошибка при блокировке пользователя";
+    }
   );
   await bot
     .answerCallbackQuery(event.id, {

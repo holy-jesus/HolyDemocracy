@@ -1,9 +1,13 @@
-import { Chat, Voting } from "../models/index.js";
+import { Chat, Voting } from "../../models/index.js";
 import { bot, botAccount } from "../bot.js";
-import { updateAdministrators, deleteChat, getOrCreateChat } from "../utils.js";
+import {
+  updateAdministrators,
+  deleteChat,
+  getOrCreateChat,
+} from "../../utils.js";
 
 bot.on("chat_member", async (event) => {
-  const chat = await getOrCreateChat(event.chat.id, event.chat.title)
+  const chat = await getOrCreateChat(event.chat.id, event.chat.title);
   await updateAdministrators(chat);
 });
 
@@ -15,6 +19,6 @@ bot.on("my_chat_member", async (event) => {
   ) {
     return await deleteChat(event.chat.id);
   }
-  const chat = await getOrCreateChat(event.chat.id, event.chat.title)
+  const chat = await getOrCreateChat(event.chat.id, event.chat.title);
   await updateAdministrators(chat);
 });

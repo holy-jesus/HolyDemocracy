@@ -1,9 +1,9 @@
-import { bot } from "#root/bot.js";
-import { Chat, Voting } from "#root/models/index.js";
-import { votingText } from "#root/commands/voting/format_text.js";
+import { bot } from "#root/bot/bot.js";
+import { Chat, Voter, Voting } from "#root/models/index.js";
+import { votingText } from "#root/bot/commands/voting/format_text.js";
 import { editMessage, isVotingDone } from "#root/utils.js";
-import { getVotingButtons } from "#root/buttons/voting.js";
-import { endVoting } from "#root/commands/voting/end_voting.js";
+import { getVotingButtons } from "#root/bot/buttons/voting.js";
+import { endVoting } from "#root/bot/commands/voting/end_voting.js";
 
 /**
  *
@@ -15,9 +15,11 @@ async function onVote(event) {
   let votingObj = await Voting.findById(event.data.slice(1));
 
   if (votingObj.done) {
-    await bot.answerCallbackQuery(event.id, {
-      text: "Это голосование уже закончилось",
-    }).catch(() => {});
+    await bot
+      .answerCallbackQuery(event.id, {
+        text: "Это голосование уже закончилось",
+      })
+      .catch(() => {});
     return;
   }
 
@@ -40,16 +42,32 @@ async function onVote(event) {
       [process.env.DEBUG ? "$push" : "$addToSet"]: {
         [yes ? "yes" : "no"]: event.from.id,
       },
-      $pull: process.env.DEBUG
-        ? {}
-        : { [yes ? "no" : "yes"]: event.from.id },
+      $pull: process.env.DEBUG ? {} : { [yes ? "no" : "yes"]: event.from.id },
     },
     { new: true }
   );
 
-  await bot.answerCallbackQuery(event.id, {
-    text: `Вы успешно проголосовали ${actionText}`,
-  }).catch(() => {});
+  await Voter.updateOne(
+    {
+      votingId: votingObj._id,
+      userId: event.from.id,
+      username: event.from.username || event.from.first_name,
+    },
+    {
+      $set: {
+        votingId: votingObj._id,
+        userId: event.from.id,
+        username: event.from.username || event.from.first_name,
+      },
+    },
+    { upsert: true }
+  );
+
+  await bot
+    .answerCallbackQuery(event.id, {
+      text: `Вы успешно проголосовали ${actionText}`,
+    })
+    .catch(() => {});
 
   const done = isVotingDone(votingObj);
 

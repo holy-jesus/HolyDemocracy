@@ -1,13 +1,13 @@
-import { Chat } from "../models/index.js";
+import { Chat } from "../../models/index.js";
 import { bot, botAccount } from "../bot.js";
-import { sendMessage, updateAdministrators } from "../utils.js";
+import { sendMessage, updateAdministrators } from "../../utils.js";
 
 bot.on("new_chat_members", async (event) => {
   const chatObj =
     (await Chat.findById(event.chat.id)) ||
     new Chat({
       _id: event.chat.id,
-      title: event.chat.title
+      title: event.chat.title,
     });
   await updateAdministrators(chatObj);
   if (event.new_chat_members[0].id != botAccount.id) {

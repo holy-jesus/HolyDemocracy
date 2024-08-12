@@ -18,8 +18,10 @@ npm i
 
 Перед запуском:
 1) Надо переназвать файл .env.example в .env; 
-2) В TOKEN вставить токен бота полученный от [@BotFather](https://t.me/BotFather);
-3) В MONGODB_URL заменить USERNAME и PASSWORD на логин и пароль соответственно от аккаунта MongoDB, если для доступа к базе данных логин и пароль не требуются, то нужно убрать `USERNAME:PASSWORD@`
+2) В `TOKEN` вставить токен бота полученный от [@BotFather](https://t.me/BotFather);
+3) __(Опционально)__ Для того чтобы команды работали через пинг надо создать приложение [по этой ссылке](https://my.telegram.org/apps) и вставить `App api_id` -> `API_ID` и `App api_hash` -> `API_HASH`
+
+то нужно убрать `USERNAME:PASSWORD@`
 
 Для запуска:
 

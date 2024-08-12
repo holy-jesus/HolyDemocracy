@@ -1,7 +1,7 @@
 import { Chat } from "#root/models/index.js";
 import { sendMessage, getUserMention, isAdministrator } from "#root/utils.js";
-import { getSettingsMainMenuButttons } from "#root/buttons/settings_main_menu.js";
-import { getChatSelectionButtons } from "#root/buttons/select_chat.js";
+import { getSettingsMainMenuButttons } from "#root/bot/buttons/settings_main_menu.js";
+import { getChatSelectionButtons } from "#root/bot/buttons/select_chat.js";
 
 /**
  *
@@ -45,7 +45,7 @@ async function sendMainMenu(msg) {
       getSettingsMainMenuButttons(chatObj.settings, chatObj.id)
     );
   } else {
-    if (await isAdministrator(msg.chat.id, msg.from.id) == false) {
+    if ((await isAdministrator(msg.chat.id, msg.from.id)) == false) {
       return;
     }
     const chatObj = await Chat.findById(msg.chat.id);

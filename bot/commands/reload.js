@@ -1,4 +1,4 @@
-import { bot } from "#root/bot.js";
+import { bot } from "#root/bot/bot.js";
 import {
   getOrCreateChat,
   isCooldown,

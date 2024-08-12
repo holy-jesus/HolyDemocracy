@@ -1,4 +1,4 @@
-import { bot } from "#root/bot.js";
+import { bot } from "#root/bot/bot.js";
 import { Chat, Block } from "#root/models/index.js";
 import {
   isAdministrator,
@@ -65,9 +65,11 @@ bot.on("callback_query", async (event) => {
   const args = event.data.replace("un", "").split("|");
   const chatId = args[0];
   const userId = args[1];
-  await bot.answerCallbackQuery(event.id, {
-    text: await unblockUser(chatId, userId),
-  }).catch(() => {});
+  await bot
+    .answerCallbackQuery(event.id, {
+      text: await unblockUser(chatId, userId),
+    })
+    .catch(() => {});
 });
 
 /**

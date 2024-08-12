@@ -1,5 +1,5 @@
 import { Chat, Voting, Block, Cooldown } from "#root/models/index.js";
-import { bot, botAccount } from "#root/bot.js";
+import { bot, botAccount } from "#root/bot/bot.js";
 
 /**
  *
@@ -52,12 +52,22 @@ async function updateAdministrators(chatObj) {
 
 /**
  *
+ * @param {String} link
+ * @param {String} text
+ * @returns
+ */
+function hyperlink(link, text) {
+  return `<a href="${link}">${text}</a>`;
+}
+
+/**
+ *
  * @param {import('node-telegram-bot-api').User} user
  * @returns {String}
  */
 function getUserMention(user) {
   const text = user?.username ? user.username : user.first_name;
-  return `<a href="tg://user?id=${user.id}">${text}</a>`;
+  return hyperlink(`tg://user?id=${user.id}`, text);
 }
 
 /**
@@ -300,6 +310,7 @@ async function getOrCreateChat(chatId, title = null) {
 export {
   isAdministrator,
   updateAdministrators,
+  hyperlink,
   getUserMention,
   isVotingDone,
   banUser,

@@ -1,9 +1,9 @@
-import { bot } from "#root/bot.js";
+import { bot } from "#root/bot/bot.js";
 import { Chat } from "#root/models/index.js";
-import { sendMainMenu } from "#root/commands/settings/main_menu.js";
-import { sendSubMenu } from "#root/commands/settings/sub_menu.js";
-import { onNewValue } from "#root/commands/settings/on_new_value.js";
-import { askForNewValue } from "#root/commands/settings/update_value.js";
+import { sendMainMenu } from "#root/bot/commands/settings/main_menu.js";
+import { sendSubMenu } from "#root/bot/commands/settings/sub_menu.js";
+import { onNewValue } from "#root/bot/commands/settings/on_new_value.js";
+import { askForNewValue } from "#root/bot/commands/settings/update_value.js";
 
 if (!String.prototype.format) {
   String.prototype.format = function () {

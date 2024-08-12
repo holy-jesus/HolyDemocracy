@@ -1,12 +1,12 @@
-import "#root/commands/settings/index.js";
-import "#root/commands/voting/index.js";
-import "#root/commands/about.js";
-import "#root/commands/block.js";
-import "#root/commands/cancel.js";
-import "#root/commands/reload.js";
-import "#root/commands/start.js";
-import "#root/commands/unblock.js";
-import "#root/commands/vanish.js";
+import "#root/bot/commands/settings/index.js";
+import "#root/bot/commands/voting/index.js";
+import "#root/bot/commands/about.js";
+import "#root/bot/commands/block.js";
+import "#root/bot/commands/cancel.js";
+import "#root/bot/commands/reload.js";
+import "#root/bot/commands/start.js";
+import "#root/bot/commands/unblock.js";
+import "#root/bot/commands/vanish.js";
 
 import { bot } from "../bot.js";
 

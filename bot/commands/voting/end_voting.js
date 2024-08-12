@@ -1,27 +1,100 @@
-import { bot } from "#root/bot.js";
-import { getBanUserButton } from "#root/buttons/ban_user.js";
-import { getVotingBanDecision } from "#root/buttons/voting_ban.js";
+import { bot } from "#root/bot/bot.js";
+import { getBanUserButton } from "#root/bot/buttons/ban_user.js";
+import { getVotingBanDecision } from "#root/bot/buttons/voting_ban.js";
 
-import { Chat, Voting } from "#root/models/index.js";
+import { Chat, Voter, Voting } from "#root/models/index.js";
 import {
   editMessage,
   getUserMention,
   sendToAllAdmins,
   timeoutUser,
-  countTimeouts,
   isAdministrator,
   banUser,
-  setCooldown
+  setCooldown,
+  hyperlink,
 } from "#root/utils.js";
-import { votingText } from "#root/commands/voting/format_text.js";
+import { votingText } from "#root/bot/commands/voting/format_text.js";
+import { getGoToMessageButtons } from "#root/bot/buttons/go_to_message.js";
 
 /**
  *
- * @param {import("mongoose").Document<Chat>} chatObj
- * @param {import("mongoose").Document<Voting>} votingObj
+ * @param {import("mongoose").HydratedDocument<Chat>} chatObj
+ * @param {import("mongoose").HydratedDocument<Voting>} votingObj
  * @param {import("node-telegram-bot-api").User} starter
  * @param {import("node-telegram-bot-api").User} candidate
  * @param {String} reason
+ */
+async function notifyAdmins(
+  chatObj,
+  votingObj,
+  starter,
+  candidate,
+  reason = null
+) {
+  if (["cancel", "ban_yes", "ban_no"].includes(reason)) return;
+  const actionText = votingObj.action == "mute" ? "мут" : "бан";
+  const reasonText = {
+    timeout: "вышло время.",
+    yes: "набралось необходимое количество голосов за.",
+    no: "набралось необходимое количество голосов против.",
+    waiting:
+      "набралось необходимое количество голосов за.\nТребуется ваше подтверждение на бан.",
+  }[reason];
+
+  const yes = [];
+  const no = [];
+  for (let userId of votingObj.yes) {
+    let voter = await Voter.findOne({
+      votingId: votingObj._id,
+      userId: userId,
+    });
+    if (!voter)
+      voter = (await bot.getChatMember(votingObj.chatId, userId)).user;
+
+    yes.push(getUserMention({ username: voter.username, id: userId }));
+  }
+  for (let userId of votingObj.no) {
+    let voter = await Voter.findOne({
+      votingId: votingObj._id,
+      userId: userId,
+    });
+    if (!voter)
+      voter = (await bot.getChatMember(votingObj.chatId, userId)).user;
+
+    no.push(getUserMention({ username: voter.username, id: userId }));
+    //no.push(getUserMention((await bot.getChatMember(votingObj.chatId, userId)).user))
+  }
+
+  const text =
+    `Голосование на <b>${actionText}</b> закончилось по причине: ${reasonText}\n\n` +
+    `Голосование начал: ${getUserMention(starter)} [${starter.id}]\n` +
+    `Кандидат на ${actionText}: ${getUserMention(candidate)} [${
+      candidate.id
+    }]\n\n` +
+    `За проголосовали (${votingObj.yes.length}/${
+      votingObj.neededYes
+    }): ${yes.join(", ")}\n` +
+    `Против проголосовали (${votingObj.no.length}/${
+      votingObj.neededNo
+    }): ${no.join(", ")}\n`;
+  await sendToAllAdmins(
+    chatObj,
+    text,
+    getGoToMessageButtons(
+      votingObj.chatId.toString().slice(4),
+      votingObj.messageId
+    )
+  );
+}
+
+/**
+ *
+ * @param {import("mongoose").HydratedDocument<Chat>} chatObj
+ * @param {import("mongoose").HydratedDocument<Voting>} votingObj
+ * @param {import("node-telegram-bot-api").User} starter
+ * @param {import("node-telegram-bot-api").User} candidate
+ * @param {String} reason
+ * @param {Boolean} start
  */
 async function endVoting(
   chatObj,
@@ -43,7 +116,7 @@ async function endVoting(
       action: "mute",
       done: "yes",
     });
-    timeouts.push(votingObj)
+    timeouts.push(votingObj);
     if (timeouts.length == 3) {
       const ids = [];
       for (let timeout of timeouts) {
@@ -65,14 +138,18 @@ async function endVoting(
     }
   } else if (reason == "yes" && votingObj.action == "ban") {
     buttons = getVotingBanDecision(votingObj._id.toString());
+
     await sendToAllAdmins(
       chatObj,
       `Голосование на бан участника ${getUserMention(
         candidate
       )} успешно завершился, он находится в таймауте до вашего подтверждения\n\n` +
-        `<a href="https://t.me/c/${votingObj.chatId.toString().slice(4)}/${
-          votingObj.messageId
-        }">Перейти к голосованию</a>`,
+        hyperlink(
+          `https://t.me/c/${votingObj.chatId.toString().slice(4)}/${
+            votingObj.messageId
+          }`,
+          "Перейти к голосованию"
+        ),
       buttons
     );
 
@@ -80,7 +157,6 @@ async function endVoting(
 
     reason = "waiting";
   }
-
   await editMessage(
     votingObj.chatId,
     votingObj.messageId,
@@ -89,7 +165,17 @@ async function endVoting(
   );
   votingObj.done = reason;
   await votingObj.save();
-  await setCooldown(chatObj._id, 180, undefined, `cooldown${candidate.id}`)
+  await setCooldown(chatObj._id, 180, undefined, `cooldown${candidate.id}`);
+  await setCooldown(
+    chatObj._id,
+    chatObj.settings.cooldown,
+    starter.id,
+    "vote"
+  );
+
+  await notifyAdmins(chatObj, votingObj, starter, candidate, reason);
+  // А стоит ли удалять? 🤔
+  // await Voter.deleteMany({votingId: votingObj._id})
 }
 
 bot.on("callback_query", async (event) => {
