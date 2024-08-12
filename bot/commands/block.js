@@ -60,10 +60,8 @@ bot.onText(/^\/block/, async (msg) => {
 });
 
 bot.on("callback_query", async (event) => {
-  if (!event.data.startsWith("bl")) return;
-  const args = event.data.replace("bl", "").split("|");
-  const chatId = args[0];
-  const userId = args[1];
+  if (!event.data.startsWith("blo")) return;
+  const [chatId, userId] = event.data.slice(3).split("|");
   await bot
     .answerCallbackQuery(event.id, {
       text: await blockUser(chatId, userId),

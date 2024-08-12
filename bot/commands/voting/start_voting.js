@@ -67,7 +67,7 @@ async function startVoting(msg, action) {
     return await sendMessage(
       msg.chat.id,
       getUserMention(starter) +
-        `, чтобы использовать эту команду с упоминанием нужного пользователя \`/vote${action}\`, либо ответив на его сообщение.`
+        `, чтобы использовать эту команду с упоминанием нужного пользователя <code>/vote${action}</code>, либо ответив на его сообщение.`
     );
   } else if (!isClientInitialized && !candidateId) {
     return await sendMessage(

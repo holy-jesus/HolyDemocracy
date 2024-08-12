@@ -38,7 +38,7 @@ bot.onText(/^\/unblock/, async (msg) => {
     for (let chat of chats) {
       chatsButtons.push({
         text: (await bot.getChat(chat._id)).title,
-        callback_data: `un${chat._id}|${userId}`,
+        callback_data: `unb${chat._id}|${userId}`,
       });
     }
 
@@ -61,10 +61,9 @@ bot.onText(/^\/unblock/, async (msg) => {
 });
 
 bot.on("callback_query", async (event) => {
-  if (!event.data.startsWith("un")) return;
-  const args = event.data.replace("un", "").split("|");
-  const chatId = args[0];
-  const userId = args[1];
+  if (!event.data.startsWith("unb")) return;
+  const [chatId, userId] = event.data.slice(3).split("|");
+  
   await bot
     .answerCallbackQuery(event.id, {
       text: await unblockUser(chatId, userId),

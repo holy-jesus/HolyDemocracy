@@ -1,7 +1,6 @@
 import { bot } from "#root/bot/bot.js";
 import { getBanUserButton } from "#root/bot/buttons/ban_user.js";
 import { getVotingBanDecision } from "#root/bot/buttons/voting_ban.js";
-
 import { Chat, Voter, Voting } from "#root/models/index.js";
 import {
   editMessage,
@@ -14,7 +13,7 @@ import {
   hyperlink,
 } from "#root/utils.js";
 import { votingText } from "#root/bot/commands/voting/format_text.js";
-import { getGoToMessageButtons } from "#root/bot/buttons/go_to_message.js";
+import { getVoteNotificationButtons } from "#root/bot/buttons/vote_notification.js";
 
 /**
  *
@@ -24,13 +23,7 @@ import { getGoToMessageButtons } from "#root/bot/buttons/go_to_message.js";
  * @param {import("node-telegram-bot-api").User} candidate
  * @param {String} reason
  */
-async function notifyAdmins(
-  chatObj,
-  votingObj,
-  starter,
-  candidate,
-  reason = null
-) {
+async function notifyAdmins(chatObj, votingObj, starter, candidate, reason) {
   if (["cancel", "ban_yes", "ban_no"].includes(reason)) return;
   const actionText = votingObj.action == "mute" ? "мут" : "бан";
   const reasonText = {
@@ -40,6 +33,7 @@ async function notifyAdmins(
     waiting:
       "набралось необходимое количество голосов за.\nТребуется ваше подтверждение на бан.",
   }[reason];
+  let additionalText = "";
 
   const yes = [];
   const no = [];
@@ -65,6 +59,18 @@ async function notifyAdmins(
     //no.push(getUserMention((await bot.getChatMember(votingObj.chatId, userId)).user))
   }
 
+  const timeouts = await Voting.find({
+    chatId: chatObj._id,
+    candidateId: candidate.id,
+    action: "mute",
+    done: "yes",
+  });
+  const thirdTimeout = timeouts.length == 3;
+
+  if (thirdTimeout) {
+    additionalText = "Это уже третий таймаут этого пользователя.";
+  }
+
   const text =
     `Голосование на <b>${actionText}</b> закончилось по причине: ${reasonText}\n\n` +
     `Голосование начал: ${getUserMention(starter)} [${starter.id}]\n` +
@@ -77,14 +83,7 @@ async function notifyAdmins(
     `Против проголосовали (${votingObj.no.length}/${
       votingObj.neededNo
     }): ${no.join(", ")}\n`;
-  await sendToAllAdmins(
-    chatObj,
-    text,
-    getGoToMessageButtons(
-      votingObj.chatId.toString().slice(4),
-      votingObj.messageId
-    )
-  );
+  await sendToAllAdmins(chatObj, text, getVoteNotificationButtons(votingObj));
 }
 
 /**
@@ -105,73 +104,43 @@ async function endVoting(
   start = false
 ) {
   if (!start) clearTimeout(votingObj.timeoutId);
-  let buttons = undefined;
 
   if (reason == "yes" && votingObj.action == "mute") {
     await timeoutUser(chatObj._id, candidate.id, chatObj.settings.muteTime);
-
-    const timeouts = await Voting.find({
-      chatId: chatObj._id,
-      candidateId: candidate.id,
-      action: "mute",
-      done: "yes",
-    });
-    timeouts.push(votingObj);
-    if (timeouts.length == 3) {
-      const ids = [];
-      for (let timeout of timeouts) {
-        // ids.push(timeout._id.toString());
-        ids.push(
-          `<a href="https://t.me/c/${timeout.chatId.toString().slice(4)}/${
-            timeout.messageId
-          }">${timeout._id.toString()}</a>`
-        );
-      }
-
-      await sendToAllAdmins(
-        chatObj,
-        `Пользователь ${getUserMention(candidate)} ` +
-          `[${candidate.id}] получил 3 таймаут.\n\n` +
-          `ID голосований: ${ids.join(", ")}`,
-        getBanUserButton(chatObj._id, candidate.id)
-      );
-    }
   } else if (reason == "yes" && votingObj.action == "ban") {
-    buttons = getVotingBanDecision(votingObj._id.toString());
+    // buttons = getVotingBanDecision(votingObj._id.toString());
 
-    await sendToAllAdmins(
-      chatObj,
-      `Голосование на бан участника ${getUserMention(
-        candidate
-      )} успешно завершился, он находится в таймауте до вашего подтверждения\n\n` +
-        hyperlink(
-          `https://t.me/c/${votingObj.chatId.toString().slice(4)}/${
-            votingObj.messageId
-          }`,
-          "Перейти к голосованию"
-        ),
-      buttons
-    );
+    // await sendToAllAdmins(
+    //   chatObj,
+    //   `Голосование на бан участника ${getUserMention(
+    //     candidate
+    //   )} успешно завершился, он находится в таймауте до вашего подтверждения\n\n` +
+    //     hyperlink(
+    //       `https://t.me/c/${votingObj.chatId.toString().slice(4)}/${
+    //         votingObj.messageId
+    //       }`,
+    //       "Перейти к голосованию"
+    //     ),
+    //   buttons
+    // );
 
     await timeoutUser(chatObj._id, candidate.id, 0);
 
     reason = "waiting";
   }
+
   await editMessage(
     votingObj.chatId,
     votingObj.messageId,
     votingText(starter, candidate, votingObj, chatObj, reason),
-    buttons
+    reason == "waiting" ? getVotingBanDecision(votingObj._id.toString()) : undefined
   );
+
   votingObj.done = reason;
   await votingObj.save();
+
   await setCooldown(chatObj._id, 180, undefined, `cooldown${candidate.id}`);
-  await setCooldown(
-    chatObj._id,
-    chatObj.settings.cooldown,
-    starter.id,
-    "vote"
-  );
+  await setCooldown(chatObj._id, chatObj.settings.cooldown, starter.id, "vote");
 
   await notifyAdmins(chatObj, votingObj, starter, candidate, reason);
   // А стоит ли удалять? 🤔
@@ -251,6 +220,31 @@ bot.on("callback_query", async (event) => {
 
   votingObj.done = reason;
   await votingObj.save();
+});
+
+bot.on("callback_query", async (event) => {
+  if (!event.data.startsWith("unt")) return;
+  const votingObj = await Voting.findById(event.data.slice(3)).catch(() => {});
+  if (!votingObj) return;
+  const candidate = await bot
+    .getChatMember(votingObj.chatId, votingObj.candidateId)
+    .catch(() => {});
+  if (!candidate) return;
+
+  if (candidate.status == "restricted")
+    await bot
+      .restrictChatMember(votingObj.chatId, votingObj.candidateId, {
+        can_send_other_messages: true,
+        can_add_web_page_previews: true,
+        until_date: Date.now() / 1000 + 60,
+      })
+      .catch(() => {});
+
+  await bot
+    .answerCallbackQuery(event.id, {
+      text: "Пользователь был успешно разблокирован",
+    })
+    .catch(() => {});
 });
 
 export { endVoting };
