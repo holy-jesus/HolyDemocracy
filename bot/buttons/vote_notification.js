@@ -7,7 +7,7 @@ import { Voting } from "#root/models/index.js";
  */
 function getActionsButtons(votingObj, thirdTimeout) {
   const row = [];
-  if (votingObj.action == "mute") {
+  if (votingObj.done == "yes") {
     row.push({
       text: "Снять таймаут",
       callback_data: "unt" + votingObj._id.toString(),
@@ -17,7 +17,7 @@ function getActionsButtons(votingObj, thirdTimeout) {
         text: "Забанить кандидата",
         callback_data: `ban${votingObj.chatId}|${votingObj.candidateId}`,
       });
-  } else {
+  } else if (votingObj.done == "waiting") {
     row.push(
       { text: "Забанить", callback_data: "conf" + votingObj._id.toString() },
       {
