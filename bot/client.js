@@ -31,10 +31,9 @@ const isClientInitialized = Boolean(client)
  * @returns {Promise<Number | undefined>}
  */
 async function getUserIdFromLogin(login) {
-  if (!client) return;
+  if (!isClientInitialized) return;
   const entity = await client.getEntity(login).catch(() => {});
-  if (!entity) return;
-  if (entity?.className != "User") return;
+  if (!entity || entity?.className != "User") return;
   return entity?.id?.value ? Number(entity.id.value) : undefined;
 }
 
