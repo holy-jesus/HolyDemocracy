@@ -3,7 +3,7 @@ import { Chat, Voting } from "#root/models/index.js";
 import { editMessage, sendMessage, isAdministrator } from "#root/utils.js";
 import { votingText } from "#root/bot/commands/voting/format_text.js";
 
-bot.onText("/cancel", async (msg) => {
+bot.onText(/^\/cancel/, async (msg) => {
   if ((await isAdministrator(msg.chat.id, msg.from.id)) == false) {
     return;
   }

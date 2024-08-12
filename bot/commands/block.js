@@ -6,7 +6,7 @@ import {
   getOnlyFirstArgument,
 } from "#root/utils.js";
 
-bot.onText("/block", async (msg) => {
+bot.onText(/^\/block/, async (msg) => {
   if (msg.chat.type == "private") {
     const userId = getOnlyFirstArgument(msg.text);
     if (!userId) {

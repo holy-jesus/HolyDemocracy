@@ -1,7 +1,7 @@
 import { bot } from "#root/bot/bot.js";
 import { sendMessage } from "#root/utils.js";
 
-bot.onText("/start", async (msg) => {
+bot.onText(/^\/start/, async (msg) => {
   if (msg.chat.id != msg.from.id) return;
   await sendMessage(
     msg.chat.id,

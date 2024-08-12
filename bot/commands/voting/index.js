@@ -3,12 +3,12 @@ import { startVoting } from "#root/bot/commands/voting/start_voting.js";
 import { onVote } from "#root/bot/commands/voting/on_vote.js";
 import { isBlocked } from "#root/utils.js";
 
-bot.onText("/votemute", async (msg) => {
+bot.onText(/^\/votemute/, async (msg) => {
   if (await isBlocked(msg.chat.id, msg.from.id)) return;
   await startVoting(msg, "mute");
 });
 
-bot.onText("/voteban", async (msg) => {
+bot.onText(/^\/voteban/, async (msg) => {
   if (await isBlocked(msg.chat.id, msg.from.id)) return;
   await startVoting(msg, "ban");
 });

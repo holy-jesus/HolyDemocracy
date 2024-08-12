@@ -14,7 +14,7 @@ if (!String.prototype.format) {
   };
 }
 
-bot.onText("/settings", async (msg) => {
+bot.onText(/^\/settings/, async (msg) => {
   await sendMainMenu(msg);
 });
 

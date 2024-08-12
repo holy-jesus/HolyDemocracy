@@ -1,7 +1,7 @@
 import { bot } from "#root/bot/bot.js";
 import { sendMessage } from "#root/utils.js";
 
-bot.onText("/about", async (msg) => {
+bot.onText(/^\/about/, async (msg) => {
   if (msg.chat.type != "private") return;
   await sendMessage(
     msg.chat.id,
