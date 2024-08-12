@@ -4,8 +4,8 @@ import {
   isAdministrator,
   getUserMention,
   sendMessage,
-  setCooldown,
   isCooldown,
+  isBlocked,
 } from "#root/utils.js";
 import { getVotingButtons } from "#root/bot/buttons/voting.js";
 import { votingText } from "#root/bot/commands/voting/format_text.js";
@@ -17,6 +17,10 @@ import { getUserIdFromLogin, isClientInitialized } from "#root/bot/client.js";
  * @param {String} action
  */
 async function startVoting(msg, action) {
+  if (msg.chat.type == "private") {
+    return await sendMessage(msg.chat.id, "Эта команда не работает в личных сообщениях с ботом.")
+  }
+  if (await isBlocked(msg.chat.id, msg.from.id)) return;
   if (await isCooldown(msg.chat.id, msg.from.id, "vote")) {
     return await sendMessage(
       msg.chat.id,
